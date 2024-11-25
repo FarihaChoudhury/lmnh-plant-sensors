@@ -63,18 +63,18 @@ You must have a `.env` file containing:
    
 ## Folders Explained
 These folders are found this repository:     
-- **archive**     
+- **[archive](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/archive)**     
    This folder contains the necessary files to move the data extracted from the previous 24hrs to the S3 bucket where 'archived' data is stored.
-- **dashboard**
+- **[dashboard](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/dashboard)**
   This folder contains the scripts needed to create the dashboard, showing dynamic visualisations on plant health for the staff to access.
 
-- **pipeline**
+- **[pipeline](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/pipeline)**
   This folder contains the ETL pipeline scripts including:
-    - _Extract_: Fetching the data from the API endpoint () every minute for all plants.
+    - _Extract_: Fetching the data from the API endpoint (https://data-eng-plants-api.herokuapp.com/plants/49) every minute for all plants.
     - _Load_: Cleans data to ensure reliability (mitigate impact of faulty sensors).
     - _Transform_: Loads the last 24 hours of data into a Microsoft SQL Server Database (RDS).
 
-- **terraform**
+- **[terraform](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/terraform)**
   This folder contains the Infrastructure as Code Scripts to provision and manage the AWS resources used. 
 
 
