@@ -1,6 +1,5 @@
 """Connects to the API and extracts relevant information"""
 
-import os
 import csv
 import requests
 
@@ -71,7 +70,6 @@ def fetch_and_collect_data() -> None:
             print(f"Failed with status code: {response.status_code}")
         print(f"Processed plant ID: {number}")
     return collected_data
-
 
 def write_to_csv(data: list[dict], csv_file: str) -> None:
     """Writes the collected data to the CSV file"""
