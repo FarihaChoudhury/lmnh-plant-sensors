@@ -1,8 +1,16 @@
 """Connects to the API and extracts relevant information"""
 
-"""Connects to the API and extracts relevant information"""
-
+import os
+import csv
 import requests
+
+# def invalid_value(api_information):
+#     """Checks to see if a part of api_information is present"""
+#     try:
+#         if api_information:
+#             return api_information
+#     except:
+#         return ValueError("The information is missing.")
 
 def extract_botanist_information(botanist_info: dict):
     """Extracts the botanist information from the API JSON"""
@@ -22,33 +30,75 @@ def extract_location_information(location_info: list):
 
 def extract_plant_information(plant_info: dict):
     """Extracts the plant information from the API JSON"""
-    Plant = {"name" : "","scientific_name" : "", "original_url" : "", }
+    scientific_name = plant_info.get('scientific_name')
+    images = plant_info.get('images')
+
+    if scientific_name is not None:
+        scientific_name = scientific_name[0]
+    else:
+        scientific_name = "None"
+    
+    if images is not None:
+        images = images['original_url']
+    else:
+        images = "None"
+
+    return {"name" : plant_info.get('name'),
+             "scientific_name" : scientific_name, 
+             "original_url" : images}
 
 def extract_metric_information(metric_info: dict):
     """Extracts the plant metric information from the API JSON"""
-    Plant_metric = {}
+    return {"temperature" : metric_info['temperature'],
+            "soil_moisture" : metric_info['soil_moisture'],
+            "recording_taken" : metric_info['recording_taken'],
+            "last_watered": metric_info['last_watered']}
 
-def store_information(api_information: dict[dict]) -> None:
-    """Stores information extracted from the API"""
-    Botanist = extract_botanist_information(api_information['botanist'])
-    Location = extract_location_information(api_information['origin_location'])
-    Plant = extract_plant_information(api_information)
-    Plant_metric = extract_metric_information(api_information)
-
-    print(Location)
-
-def connect_to_endpoints() -> None:
-    """Connects to an API endpoint"""
+def fetch_and_collect_data():
+    """Fetches data from the API and collects it into a list of dictionaries"""
+    collected_data = []
     for number in range(50):
         url = f"https://data-eng-plants-api.herokuapp.com/plants/{number}"
         response = requests.get(url)
 
         if response.status_code == 200:
-            #print(response.json())
-            store_information(response.json())
+            api_information = response.json()
+            Botanist = extract_botanist_information(api_information['botanist'])
+            Location = extract_location_information(api_information['origin_location'])
+            Plant = extract_plant_information(api_information)
+            Plant_metric = extract_metric_information(api_information)
+
+            combined_data = {
+                **Botanist,
+                **Location,
+                "plant_name": Plant["name"],
+                "plant_scientific_name": Plant["scientific_name"],
+                "plant_image_url": Plant["original_url"],
+                **Plant_metric
+            }
+
+            collected_data.append(combined_data)
         else:
             print(f"Failed with status code: {response.status_code}")
+        print(f"Processed plant ID: {number}")
+
+    return collected_data
+
+
+def write_to_csv(data: list[dict], csv_file: str):
+    """Writes the collected data to the CSV file"""
+    if not data:
+        print("No data to write.")
         return
 
+    # Overwrite the file with new content
+    with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.DictWriter(file, fieldnames=data[0].keys())
+        writer.writeheader()
+        writer.writerows(data)
+
+
 if __name__ == "__main__":
-    connect_to_endpoints()
+    csv_file = "Api_information.csv"
+    collected_data = fetch_and_collect_data()
+    write_to_csv(collected_data, csv_file)
