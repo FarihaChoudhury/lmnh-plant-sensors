@@ -43,11 +43,6 @@ Prerequisites:
    ```sh
    pip install -r requirements.txt
    ```
-<<<<<<< HEAD
-   
-=======
-
->>>>>>> d29fb2f (adding main read me and little read mes)
 ## .env & .tfvars Requirements
 You must have a `.env` file containing:   
 | Variable Name       | Description          | 
@@ -71,22 +66,6 @@ These folders are found this repository:
     - _Transform_: Loads the last 24 hours of data into a Microsoft SQL Server Database (RDS).
 
 - **[terraform](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/terraform)**
-=======
-- **archive**     
-   This folder contains the necessary files to move the data extracted from the previous 24hrs to the S3 bucket where 'archived' data is stored.
-- **dashboard**
-  This folder contains the scripts needed to create the dashboard, showing dynamic visualisations on plant health for the staff to access.
-
-- **pipeline**
-  This folder contains the ETL pipeline scripts including:
-    - _Extract_: Fetching the data from the API endpoint () every minute for all plants.
-    - _Load_: Cleans data to ensure reliability (mitigate impact of faulty sensors).
-    - _Transform_: Loads the last 24 hours of data into a Microsoft SQL Server Database (RDS).
-
-- **terraform**
->>>>>>> d29fb2f (adding main read me and little read mes)
-  This folder contains the Infrastructure as Code Scripts to provision and manage the AWS resources used. 
-
 
 ## Files Explained
 These files are found in this repository:
