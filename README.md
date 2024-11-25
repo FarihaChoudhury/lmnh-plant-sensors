@@ -24,14 +24,6 @@
 ## About the Project
 Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors to monitor critical plant health metrics such as soil moisture and temperature across their conservatory. However, the museum is seeking to enhance its monitoring system by tracking the health of plants over time and providing real-time alerts for gardeners when there is a problem. This project delivers a fully-functioning cloud-based Extract Transform Load (ETL) pipeline incorporating short- and long-term data storage solutions. In addition, the project includes a dynamic dashboard which allows staff constant access to a source of continually updating information.  
 
-### Project Overview
-This project builds an ETL pipeline that:
-1. **Extracts** PubMed articles from an .xml file downloaded from an S3 bucket.
-2. **Transforms** the data by:
-      - Extracting key information such as keywords, author details, and affiliation information (including emails and institutions).
-      - Standardizing affiliation names using fuzzy matching with data from the Global Research Identifier Database (GRID), which contains standard names and aliases for medical institutions.
-Loads the final processed data into a .csv file and uploads it back to an S3 bucket for further analysis and use.
-
 ### Built With
  [![Python][Python.com]][Python-url]
 
@@ -39,7 +31,6 @@ Loads the final processed data into a .csv file and uploads it back to an S3 buc
 ## 🛠️ Getting Started
 Prerequisites:
 - Python 3.x must be installed with pip3 for dependency installation.  
-  
 
 
 ## Installation
