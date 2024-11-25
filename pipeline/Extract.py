@@ -4,14 +4,6 @@ import os
 import csv
 import requests
 
-# def invalid_value(api_information):
-#     """Checks to see if a part of api_information is present"""
-#     try:
-#         if api_information:
-#             return api_information
-#     except:
-#         return ValueError("The information is missing.")
-
 def extract_botanist_information(botanist_info: dict):
     """Extracts the botanist information from the API JSON"""
     Botanist = {"name" : "", "email" : "", "phone" : ""}
@@ -81,20 +73,14 @@ def fetch_and_collect_data():
         else:
             print(f"Failed with status code: {response.status_code}")
         print(f"Processed plant ID: {number}")
-
     return collected_data
 
 
 def write_to_csv(data: list[dict], csv_file: str):
     """Writes the collected data to the CSV file"""
-    if not data:
-        print("No data to write.")
-        return
-
-    # Overwrite the file with new content
     with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.DictWriter(file, fieldnames=data[0].keys())
-        writer.writeheader()
+        writer = csv.DictWriter(file, fieldnames=data[0].keys()) # gets column headings from first csv row
+        writer.writeheader() # writes them
         writer.writerows(data)
 
 
