@@ -48,8 +48,7 @@ async def extract_plant_information(plant_info: dict) -> dict:
 
     return {"plant_id": plant_info.get('plant_id'),
             "name": plant_info.get('name'),
-            "scientific_name": scientific_name,
-            "original_url": images}
+            "scientific_name": scientific_name}
 
 
 async def extract_metric_information(metric_info: dict) -> dict:
@@ -78,7 +77,6 @@ async def fetch_plant_data(session: aiohttp.ClientSession, number: int) -> dict:
                     "plant_id": plant['plant_id'],
                     "plant_name": plant["name"],
                     "plant_scientific_name": plant["scientific_name"],
-                    "plant_image_url": plant["original_url"],
                     **plant_metric
                 }
                 logging.info("Processed plant ID: %s", number)
