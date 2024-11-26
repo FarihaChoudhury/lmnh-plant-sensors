@@ -11,6 +11,7 @@ This directory focuses on **terraforming** all the AWS cloud services that are u
 ## Terraformed AWS services:
 * Lambda - to run the ETL pipeline for extracting plant metrics and uploading to the RDS. 
 * Event Bridge schedules - to schedule the ETL pipeline lambda for every minute.
+* ECS Service - to run the dashboard continuously.
   
 
 ## Installation
