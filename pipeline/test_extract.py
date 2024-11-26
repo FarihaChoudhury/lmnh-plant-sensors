@@ -1,5 +1,13 @@
+"""Tests for extract.py"""
+#  pylint: skip-file
+
 import pytest
-from extract import extract_botanist_information, extract_location_information, extract_metric_information, extract_plant_information, fetch_and_collect_data, write_to_csv
+from extract import (extract_botanist_information,
+                     extract_location_information,
+                     extract_metric_information,
+                     extract_plant_information,
+                     fetch_and_collect_data,
+                     write_to_csv)
 
 
 @pytest.fixture
