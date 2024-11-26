@@ -34,6 +34,21 @@ jobs:
 
       - name: Run pytest
         run: pytest
+        continue-on-error: true
+
+      - name: Parse pytest results to calculate success percentage
+        id: calculate_percentage
+        run: |
+          total=$(grep -oP '(?<=tests=")[0-9]+' pytest-results.xml)
+          failures=$(grep -oP '(?<=failures=")[0-9]+' pytest-results.xml)
+          errors=$(grep -oP '(?<=errors=")[0-9]+' pytest-results.xml)
+          skips=$(grep -oP '(?<=skipped=")[0-9]+' pytest-results.xml)
+          passed=$((total - failures - errors - skips))
+          percentage=$((100 * passed / total))
+          echo "Total tests: $total"
+          echo "Passed: $passed"
+          echo "Percentage: $percentage%"
+          echo "::set-output name=percentage::$percentage"
   
   
   badge: 
@@ -53,8 +68,8 @@ jobs:
         uses: emibcn/badge-action@v1
         id: test_badge
         with:
-          label: 'Complete Build: '
-          status: 'Completed'
+          label: 'Pytest pass rate'
+          status: '${{ needs.test.outputs.percentage }}%'
           color: 'blue'
           path: .github/badges/test.svg
           scale: 1.5

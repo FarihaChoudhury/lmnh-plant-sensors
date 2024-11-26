@@ -1,4 +1,6 @@
 # Liverpool Natural History Museum: Plant Health Monitoring System
+[![Pytest Pass Rate](.github/badges/test.svg)](https://github.com/SurinaCS/lmnh-plant-sensors/actions)
+
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
