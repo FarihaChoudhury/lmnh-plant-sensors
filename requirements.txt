@@ -6,5 +6,4 @@ python-dotenv
 pymssql
 aiohttp
 certifi
-ssl
 asyncio
