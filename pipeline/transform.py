@@ -32,8 +32,8 @@ def round_floats(dataframe: pd.DataFrame, decimal_places: int) -> pd.DataFrame:
     """Round all float columns to 2 decimal places."""
     cols_to_round = ["longitude", "latitude", "temperature", "soil_moisture"]
     for col in cols_to_round:
-        dataframe[col] = dataframe[col].round(
-            decimal_places).apply(lambda x: f"{x:.2f}")
+        dataframe[col] = dataframe[col].round(decimal_places).apply(
+            lambda x: f"{x:.2f}" if isinstance(x, (int, float)) else x)
     return dataframe
 
 
@@ -75,4 +75,4 @@ def main_transform(filename: str, decimals: int, regex: str, clean_filename: str
 
 
 if __name__ == "__main__":
-    main_transform(FILENAME, DECIMAL_PLACES, EMAIL_REGEX, CLEAN_FILENAME)
+    df = main_transform(FILENAME, DECIMAL_PLACES, EMAIL_REGEX, CLEAN_FILENAME)
