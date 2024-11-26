@@ -5,19 +5,19 @@ provider "aws" {
 }
 
 data "aws_vpc" "c14-vpc" {
-    id = "vpc-0344763624ac09cb6"
+    id = var.C14_VPC
 }
 
 data "aws_subnet" "c14-subnet-1" {
-  id = "subnet-0497831b67192adc2"
+  id = var.C14_SUBNET_1
 }
 
 data "aws_subnet" "c14-subnet-2" {
-  id = "subnet-0acda1bd2efbf3922"
+  id = var.C14_SUBNET_2
 }
 
 data "aws_subnet" "c14-subnet-3" {
-  id = "subnet-0465f224c7432a02e"
+  id = var.C14_SUBNET_3
 }
 
 

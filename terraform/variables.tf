@@ -13,6 +13,15 @@ variable "C14_VPC"{
     type = string
 }
 
+variable "C14_SUBNET_1"{
+    type = string
+}
+variable "C14_SUBNET_2"{
+    type = string
+}
+variable "C14_SUBNET_3"{
+    type = string
+}
 
 variable "DB_USER" {
     type = string
