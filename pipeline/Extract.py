@@ -102,29 +102,3 @@ if __name__ == "__main__":
     CSV_FILE = "Plant_information.csv"
     collected_data = fetch_and_collect_data()
     write_to_csv(collected_data, CSV_FILE)
-
-{
-    "botanist": {
-        "email": "test@test.com",
-        "name": "firstname lastname",
-        "phone": "+0000 111222"
-    },
-    "images": {
-        "original_url": "https://test.jpg",
-    },
-    "last_watered": "Test time 1",
-    "name": "Test Test",
-    "origin_location": [
-            "1",
-            "0",
-            "London",
-            "GB",
-    ],
-    "plant_id": 11,
-    "recording_taken": "Test time 2",
-    "scientific_name": [
-        "Test Test"
-    ],
-    "soil_moisture": 0,
-    "temperature": 1
-}
