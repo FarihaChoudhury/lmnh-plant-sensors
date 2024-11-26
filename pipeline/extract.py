@@ -3,9 +3,9 @@
 import csv
 import logging
 import asyncio
+import ssl
 import aiohttp
 import certifi
-import ssl
 
 logging.basicConfig(
     level=logging.INFO,
@@ -81,12 +81,11 @@ async def fetch_plant_data(session: aiohttp.ClientSession, number: int) -> dict:
                 }
                 logging.info("Processed plant ID: %s", number)
                 return combined_data
-            else:
-                logging.error(
-                    "Failed with status code: %s, plant ID: %s", response.status, number)
-                return None
+            logging.error(
+                "Failed with status code: %s, plant ID: %s", response.status, number)
+            return None
     except aiohttp.ClientError as e:
-        logging.error(f"Error fetching data for plant ID {number}: {e}")
+        logging.error("Error fetching data for plant ID %s: %s", number, e)
         return None
 
 
