@@ -62,6 +62,6 @@ Before running the script, you need to set up your AWS credentials. Create a new
 | DB_NAME           | The name of the database.                              |
 | SCHEMA_NAME       | The name of the database schema.                       |
 | ETL_ECR_URI       | The URI for the ETL container repository in ECR.       |
-| ARCHIVE_ECR_URI  | The URI for the Archive container repository in ECR.    |
+| ARCHIVE_ECR_URI   | The URI for the Archive container repository in ECR.   |
 | DASHBOARD_ECR_URI | The URI for the dashboard container repository in ECR. |
 
