@@ -78,4 +78,4 @@ class TestTransformCleaning():
         }
         df = check_for_null_vals(pd.DataFrame(test_data))
         assert df.shape == (1, 2)
-        assert df.isnull().values.any() is False
+        assert not df.isnull().values.any()
