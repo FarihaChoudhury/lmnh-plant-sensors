@@ -61,8 +61,7 @@ def check_for_null_vals(dataframe: pd.DataFrame):
         dataframe["soil_moisture"], errors='coerce')
     dataframe["temperature"] = pd.to_numeric(
         dataframe["temperature"], errors='coerce')
-    # cols = [""]
-    return dataframe.dropna(subset=["soil_moisture", "temperature"])
+    return dataframe.dropna(subset=["soil_moisture", "temperature", "plant_id", "name"])
 
 
 def main_transform(filename: str, decimals: int, regex: str, clean_filename: str) -> pd.DataFrame:
