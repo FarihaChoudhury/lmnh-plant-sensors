@@ -44,11 +44,14 @@ terraform destroy
 
 Before running the script, you need to set up your AWS credentials. Create a new file called `.terraform.tfvars` in the `terraform` directory and add the following lines, with your actual AWS keys and database details:
 
-| Variable         | Description                                       |
-|------------------|---------------------------------------------------|
+| Variable         | Description                                      |
+|------------------|--------------------------------------------------|
 | AWS_ACCESS_KEY   | The access key for AWS authentication.           |
 | AWS_SECRET_KEY   | The secret key for AWS authentication.           |
 | C14_VPC          | The VPC (Virtual Private Cloud) ID.              |
+| C14_SUBNET_1     | The subnet id 1.                                 |
+| C14_SUBNET_2     | The subnet id 2.                                 |
+| C14_SUBNET_3     | The subnet id 3.                                 |
 | DB_HOST          | The hostname or IP address of the database.      |
 | DB_PORT          | The port number for the database connection.     |
 | DB_PASSWORD      | The password for the database user.              |
