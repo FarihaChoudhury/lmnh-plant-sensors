@@ -66,9 +66,9 @@ def fetch_and_collect_data() -> None:
             }
 
             collected_data.append(combined_data)
+            print(f"Processed plant ID: {number}")
         else:
-            print(f"Failed with status code: {response.status_code}")
-        print(f"Processed plant ID: {number}")
+            print(f"Failed with status code: {response.status_code}, plant ID: {number}")
     return collected_data
 
 def write_to_csv(data: list[dict], csv_file: str) -> None:
@@ -79,6 +79,6 @@ def write_to_csv(data: list[dict], csv_file: str) -> None:
         writer.writerows(data)
 
 if __name__ == "__main__":
-    csv_file = "Api_information.csv"
+    csv_file = "Plant_information.csv"
     collected_data = fetch_and_collect_data()
     write_to_csv(collected_data, csv_file)
