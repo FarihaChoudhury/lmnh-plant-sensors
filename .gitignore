@@ -93,3 +93,4 @@ venv/
 .env
 terraform.tfvars
 *.csv
+.coverage
