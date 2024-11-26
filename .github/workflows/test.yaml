@@ -68,8 +68,8 @@ jobs:
      
       - name: Committing logs and badge to the repository
         run: |
-          git config --global user.name "FarihaChoudhury"
-          git config --global user.email "farihac2002@gmail.com"
+          git config --global user.name "SurinaCS"
+          git config --global user.email "trainee.surina.santhokhy@sigmalabs.co.uk"
           git pull
           git add .github/badges/test.svg
           git checkout main
