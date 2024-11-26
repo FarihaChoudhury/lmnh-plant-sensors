@@ -2,6 +2,15 @@
 
 import csv
 import requests
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),  # Logs to console
+    ]
+)
 
 def extract_botanist_information(botanist_info: dict) -> dict:
     """Extracts the botanist information from the API JSON"""
@@ -66,9 +75,9 @@ def fetch_and_collect_data() -> None:
             }
 
             collected_data.append(combined_data)
-            print(f"Processed plant ID: {number}")
+            logging.info(f"Processed plant ID: {number}")
         else:
-            print(f"Failed with status code: {response.status_code}, plant ID: {number}")
+            logging.error(f"Failed with status code: {response.status_code}, plant ID: {number}")
     return collected_data
 
 def write_to_csv(data: list[dict], csv_file: str) -> None:
@@ -77,6 +86,7 @@ def write_to_csv(data: list[dict], csv_file: str) -> None:
         writer = csv.DictWriter(file, fieldnames=data[0].keys()) # gets column headings from first csv row
         writer.writeheader() 
         writer.writerows(data)
+    logging.info(f"Data written to CSV file: {csv_file}")
 
 if __name__ == "__main__":
     csv_file = "Plant_information.csv"
