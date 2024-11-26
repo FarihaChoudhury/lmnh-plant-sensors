@@ -3,6 +3,7 @@
 
 import re
 import pandas as pd
+import string
 
 
 FILENAME = "Plant_information.csv"
@@ -31,8 +32,8 @@ def round_floats(dataframe: pd.DataFrame, decimal_places: int) -> pd.DataFrame:
     """Round all float columns to 2 decimal places."""
     cols_to_round = ["longitude", "latitude", "temperature", "soil_moisture"]
     for col in cols_to_round:
-        dataframe[col] = dataframe[col].round(
-            decimal_places).apply(lambda x: f"{x:.2f}")
+        dataframe[col] = dataframe[col].round(decimal_places).apply(
+            lambda x: f"{x:.2f}" if isinstance(x, (int, float)) else x)
     return dataframe
 
 
@@ -43,13 +44,36 @@ def verify_emails(dataframe: pd.DataFrame, email_regex: str) -> pd.DataFrame:
     return dataframe
 
 
+def remove_punctuation(dataframe: pd.DataFrame):
+    """Function to remove extra punctuation from specific columns."""
+
+    columns = ["name", "plant_name", "plant_scientific_name"]
+    for col in columns:
+        if dataframe[col].dtype == 'object':
+            dataframe[col] = dataframe[col].str.replace(
+                r"[\"',]", "", regex=True)
+    return dataframe
+
+
+def check_for_null_vals(dataframe: pd.DataFrame):
+    """Check for any null values, discard row if found."""
+    dataframe["soil_moisture"] = pd.to_numeric(
+        dataframe["soil_moisture"], errors='coerce')
+    dataframe["temperature"] = pd.to_numeric(
+        dataframe["temperature"], errors='coerce')
+
+    return dataframe.dropna(subset=["soil_moisture", "temperature", "plant_id", "name"])
+
+
 def main_transform(filename: str, decimals: int, regex: str, clean_filename: str) -> pd.DataFrame:
     """Main transform file to clean the data and validate data."""
     plant_metrics_dt = convert_datatypes(load_data(filename))
     plant_metrics_round = round_floats(plant_metrics_dt, decimals)
-    plant_metrics = verify_emails(plant_metrics_round, regex)
+    plant_metrics = remove_punctuation(
+        verify_emails(plant_metrics_round, regex))
+
     return plant_metrics.to_csv(clean_filename)
 
 
 if __name__ == "__main__":
-    main_transform(FILENAME, DECIMAL_PLACES, EMAIL_REGEX, CLEAN_FILENAME)
+    df = main_transform(FILENAME, DECIMAL_PLACES, EMAIL_REGEX, CLEAN_FILENAME)

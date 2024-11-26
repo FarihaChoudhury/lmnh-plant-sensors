@@ -12,7 +12,6 @@ variable "AWS_REGION" {
 variable "C14_VPC"{
     type = string
 }
-
 variable "C14_SUBNET_1"{
     type = string
 }
@@ -20,6 +19,9 @@ variable "C14_SUBNET_2"{
     type = string
 }
 variable "C14_SUBNET_3"{
+    type = string
+}
+variable C14_CLUSTER{
     type = string
 }
 
@@ -46,3 +48,11 @@ variable "SCHEMA_NAME"{
 variable "ETL_ECR_URI"{
     type = string
 }
+
+variable "DASHBOARD_ECR_URI"{
+    type = string
+}
+variable "ARCHIVE_ECR_URI"{
+    type = string
+}
+
