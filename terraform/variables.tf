@@ -37,3 +37,8 @@ variable "SCHEMA_NAME"{
 variable "ETL_ECR_URI"{
     type = string
 }
+
+variable "ARCHIVE_ECR_URI"{
+    type = string
+}
+
