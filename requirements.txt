@@ -3,3 +3,4 @@ pytest-cov
 requests
 aiohttp
 certifi
+pandas 
