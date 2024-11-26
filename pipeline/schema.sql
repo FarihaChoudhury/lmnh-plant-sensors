@@ -150,4 +150,5 @@ INSERT INTO epsilon.plant (plant_id, plant_name, scientific_name, location_id) V
 (46, 'Medinilla Magnifica', 'Medinilla magnifica', 42),
 (47, 'Calliandra Haematocephala', 'Calliandra haematocephala', 43),
 (48, 'Zamioculcas Zamiifolia', 'Zamioculcas zamiifolia', 44),
-(49 ,'Crassula Ovata', 'Crassula ovata', 45);
+(49 ,'Crassula Ovata', 'Crassula ovata', 45),
+(50, 'Epipremnum Aureum', 'Epipremnum aureum', 1);

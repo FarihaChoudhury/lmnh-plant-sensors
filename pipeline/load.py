@@ -4,12 +4,15 @@ from dotenv import load_dotenv
 import pandas as pd
 from pymssql import connect, Connection, exceptions
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
-def get_connection() -> connect:
+
+def get_connection() -> Connection:
     """Connects to Microsoft SQL Server Database"""
-    logging.info("Connected to database")
+    logging.info("Attempting to connect to the database.")
     try:
-        return connect(
+        conn = connect(
             server=environ["DB_HOST"],
             port=environ["DB_PORT"],
             user=environ["DB_USER"],
@@ -17,64 +20,105 @@ def get_connection() -> connect:
             database=environ["DB_NAME"],
             as_dict=True
         )
+        logging.info("Database connection successful.")
+        return conn
     except KeyError as e:
         logging.error("%s missing from environment variables.", e)
+        raise
     except exceptions.OperationalError as e:
         logging.error("Error connecting to database: %s", e)
+        raise
+    except Exception as e:
+        logging.error("Unexpected error while connecting to database: %s", e)
+        raise
 
 
-def get_botanist_id(connection: Connection, name: str) -> int:
-    """Gets the id of a botanist or plant by a given plant name"""
-
-    query = f"""SELECT botanist_id from epsilon.botanist WHERE full_name LIKE '%{
-        name}%'"""
-    with connection.cursor() as cur:
-        print(f"Query is :{query}")
-        cur.execute(query,)
-        id = cur.fetchone()['botanist_id']
-        print(id)
-
-    return id
+def get_botanists_id_mapping(connection: Connection, names: list) -> dict:
+    """Fetches botanist IDs for a list of names."""
+    logging.info("Fetching botanist IDs for names: %s", names)
+    query = f"""SELECT botanist_id, full_name FROM epsilon.botanist WHERE full_name IN ({
+        ', '.join(['%s'] * len(names))})"""
+    try:
+        with connection.cursor() as cur:
+            cur.execute(query, names)
+            result = cur.fetchall()
+            if not result:
+                logging.warning("No botanists found for the provided names.")
+            return {botanist['full_name']: botanist['botanist_id'] for botanist in result}
+    except exceptions.DatabaseError as e:
+        logging.error("Database error while fetching botanist IDs: %s", e)
+        raise
+    except Exception as e:
+        logging.error("Unexpected error while fetching botanist IDs: %s", e)
+        raise
 
 
 def get_plant_metric_data() -> pd.DataFrame:
-    return pd.read_csv("./clean_plant_info.csv")
+    """Reads the plant metric data from a CSV file."""
+    try:
+        df = pd.read_csv("./clean_plant_info.csv")
+        logging.info("Plant metric data loaded successfully.")
+        return df
+    except FileNotFoundError as e:
+        logging.error("CSV file not found: %s", e)
+        raise
+    except pd.errors.EmptyDataError as e:
+        logging.error("CSV file is empty: %s", e)
+        raise
 
 
-def insert_into_plant_metric(connection: Connection, metric_df: pd.DataFrame) -> None:
-    """Inserts data into the table plant_metric"""
+def insert_into_plant_metric(connection: Connection, metric_df: pd.DataFrame, botanist_id_mapping: dict) -> None:
+    """Inserts plant metric data into the database."""
+    query = """INSERT INTO epsilon.plant_metric (temperature, soil_moisture,
+                recording_taken, last_watered, botanist_id, plant_id) 
+                VALUES (%s, %s, %s, %s, %s, %s)"""
 
-    for _, row in metric_df.iterrows():
+    data_to_insert = metric_df.apply(
+        lambda row: (
+            row['temperature'],
+            row['soil_moisture'],
+            row['recording_taken'],
+            row['last_watered'],
+            botanist_id_mapping.get(row['name']),
+            row['plant_id']
+        ), axis=1).tolist()
 
-        logging.info(f"Adding to db: {row['plant_name']}")
-        print("row", _)
-
-        botanist_id = get_botanist_id(
-            connection, "epsilon.botanist", row['name'])
-        plant_id = get_botanist_id(
-            connection, "epsilon.plant", row['plant_name'].replace(",", "").replace("'", ""))
-
-        query = """INSERT INTO epsilon.plant_metric (temperature, soil_moisture,
-        recording_taken, last_watered, botanist_id, plant_id) VALUES
-        (%s, %s, %s, %s, %s, %s)"""
-
-        with connection.cursor() as cur:
-            print(botanist_id)
-            print(plant_id)
-            print("")
-            cur.execute(query, (row['temperature'], row['soil_moisture'],
-                                row['recording_taken'], row['last_watered'], botanist_id, plant_id))
-        logging.info("Query successfully executed")
-        connection.commit()
-    connection.close()
-    logging.info("Connection closed")
+    if data_to_insert:
+        try:
+            with connection.cursor() as cur:
+                cur.executemany(query, data_to_insert)
+                connection.commit()
+                logging.info(
+                    f"Inserted {len(data_to_insert)} rows into the plant_metric table.")
+        except exceptions.DatabaseError as e:
+            logging.error(
+                "Database error while inserting plant metric data: %s", e)
+            raise
+        except Exception as e:
+            logging.error(
+                "Unexpected error while inserting plant metric data: %s", e)
+            raise
+    else:
+        logging.warning("No data to insert into the plant_metric table.")
 
 
 def main():
     load_dotenv()
-    metric_df = get_plant_metric_data()
-    conn = get_connection()
-    insert_into_plant_metric(conn, metric_df)
+
+    try:
+        metric_df = get_plant_metric_data()
+
+        with get_connection() as conn:
+            botanist_names = metric_df['name'].unique().tolist()
+
+            botanist_id_mapping = get_botanists_id_mapping(
+                conn, botanist_names)
+
+            insert_into_plant_metric(conn, metric_df, botanist_id_mapping)
+
+    except Exception as e:
+        logging.error(
+            "An error occurred during the execution of the program: %s", e)
 
 
 if __name__ == "__main__":
