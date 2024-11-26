@@ -13,7 +13,7 @@ This directory focuses on **terraforming** all the AWS cloud services that are u
 * Event Bridge schedules - to schedule the ETL pipeline lambda for every minute.
 * Lambda - to run the archive process everyday at 12am, moving plant statistics to long term storage.
 * Event bridge Schedule - to schedule the archive lambda for every day 12am. 
-  
+* ECS Service - to run the dashboard continuously.
 
 ## Installation
 
@@ -46,19 +46,22 @@ terraform destroy
 
 Before running the script, you need to set up your AWS credentials. Create a new file called `.terraform.tfvars` in the `terraform` directory and add the following lines, with your actual AWS keys and database details:
 
-| Variable         | Description                                          |
-|------------------|------------------------------------------------------|
-| AWS_ACCESS_KEY   | The access key for AWS authentication.               |
-| AWS_SECRET_KEY   | The secret key for AWS authentication.               |
-| C14_VPC          | The VPC (Virtual Private Cloud) ID.                  |
-| C14_SUBNET_1     | The subnet id 1.                                     |
-| C14_SUBNET_2     | The subnet id 2.                                     |
-| C14_SUBNET_3     | The subnet id 3.                                     |
-| DB_HOST          | The hostname or IP address of the database.          |
-| DB_PORT          | The port number for the database connection.         |
-| DB_PASSWORD      | The password for the database user.                  |
-| DB_USER          | The username for the database.                       |
-| DB_NAME          | The name of the database.                            |
-| SCHEMA_NAME      | The name of the database schema.                     |
-| ETL_ECR_URI      | The URI for the ETL container repository in ECR.     |
-| ARCHIVE_ECR_URI  | The URI for the Archive container repository in ECR. |
+| Variable          | Description                                            |
+|-------------------|--------------------------------------------------------|
+| AWS_ACCESS_KEY    | The access key for AWS authentication.                 |
+| AWS_SECRET_KEY    | The secret key for AWS authentication.                 |
+| C14_VPC           | The VPC (Virtual Private Cloud) ID.                    |
+| C14_SUBNET_1      | The subnet id 1.                                       |
+| C14_SUBNET_2      | The subnet id 2.                                       |
+| C14_SUBNET_3      | The subnet id 3.                                       |
+| C14_CLUSTER       | The cluster for the ECS service.                       |
+| DB_HOST           | The hostname or IP address of the database.            |
+| DB_PORT           | The port number for the database connection.           |
+| DB_PASSWORD       | The password for the database user.                    |
+| DB_USER           | The username for the database.                         |
+| DB_NAME           | The name of the database.                              |
+| SCHEMA_NAME       | The name of the database schema.                       |
+| ETL_ECR_URI       | The URI for the ETL container repository in ECR.       |
+| ARCHIVE_ECR_URI   | The URI for the Archive container repository in ECR.   |
+| DASHBOARD_ECR_URI | The URI for the dashboard container repository in ECR. |
+
