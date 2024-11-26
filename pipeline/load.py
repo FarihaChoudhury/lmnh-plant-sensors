@@ -23,21 +23,15 @@ def get_connection() -> connect:
         logging.error("Error connecting to database: %s", e)
 
 
-def get_table_id(connection: Connection, table_name: str, name: str) -> int:
+def get_botanist_id(connection: Connection, name: str) -> int:
     """Gets the id of a botanist or plant by a given plant name"""
 
-    if table_name == "epsilon.botanist":
-        table_col = "botanist_id"
-        query = f"""SELECT botanist_id from epsilon.botanist WHERE full_name LIKE '%{
-            name}%'"""
-    elif table_name == "epsilon.plant":
-        table_col = "plant_id"
-        query = f"""SELECT plant_id from epsilon.plant WHERE plant_name LIKE '%{
-            name}%'"""
+    query = f"""SELECT botanist_id from epsilon.botanist WHERE full_name LIKE '%{
+        name}%'"""
     with connection.cursor() as cur:
         print(f"Query is :{query}")
         cur.execute(query,)
-        id = cur.fetchone()[table_col]
+        id = cur.fetchone()['botanist_id']
         print(id)
 
     return id
@@ -55,8 +49,9 @@ def insert_into_plant_metric(connection: Connection, metric_df: pd.DataFrame) ->
         logging.info(f"Adding to db: {row['plant_name']}")
         print("row", _)
 
-        botanist_id = get_table_id(connection, "epsilon.botanist", row['name'])
-        plant_id = get_table_id(
+        botanist_id = get_botanist_id(
+            connection, "epsilon.botanist", row['name'])
+        plant_id = get_botanist_id(
             connection, "epsilon.plant", row['plant_name'].replace(",", "").replace("'", ""))
 
         query = """INSERT INTO epsilon.plant_metric (temperature, soil_moisture,
