@@ -11,6 +11,8 @@ This directory focuses on **terraforming** all the AWS cloud services that are u
 ## Terraformed AWS services:
 * Lambda - to run the ETL pipeline for extracting plant metrics and uploading to the RDS. 
 * Event Bridge schedules - to schedule the ETL pipeline lambda for every minute.
+* Lambda - to run the archive process everyday at 12am, moving plant statistics to long term storage.
+* Event bridge Schedule - to schedule the archive lambda for every day 12am. 
   
 
 ## Installation
@@ -58,4 +60,5 @@ DB_NAME=""
 SCHEMA_NAME=""
 
 ETL_ECR_URI=""
+ARCHIVE_ECR_URI=""
 ```
