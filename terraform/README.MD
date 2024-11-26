@@ -44,18 +44,15 @@ terraform destroy
 
 Before running the script, you need to set up your AWS credentials. Create a new file called `.terraform.tfvars` in the `terraform` directory and add the following lines, with your actual AWS keys and database details:
 
-```text
-AWS_ACCESS_KEY=""
-AWS_SECRET_KEY=""
-
-C14_VPC=""
-
-DB_HOST=""
-DB_PORT=""
-DB_PASSWORD=""
-DB_USER=""
-DB_NAME=""
-SCHEMA_NAME=""
-
-ETL_ECR_URI=""
-```
+| Variable         | Description                                       |
+|------------------|---------------------------------------------------|
+| AWS_ACCESS_KEY   | The access key for AWS authentication.           |
+| AWS_SECRET_KEY   | The secret key for AWS authentication.           |
+| C14_VPC          | The VPC (Virtual Private Cloud) ID.              |
+| DB_HOST          | The hostname or IP address of the database.      |
+| DB_PORT          | The port number for the database connection.     |
+| DB_PASSWORD      | The password for the database user.              |
+| DB_USER          | The username for the database.                   |
+| DB_NAME          | The name of the database.                        |
+| SCHEMA_NAME      | The name of the database schema.                 |
+| ETL_ECR_URI      | The URI for the ETL container repository in ECR. |
