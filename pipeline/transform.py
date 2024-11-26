@@ -44,16 +44,6 @@ def verify_emails(dataframe: pd.DataFrame, email_regex: str) -> pd.DataFrame:
     return dataframe
 
 
-def main_transform(filename: str, decimals: int, regex: str, clean_filename: str) -> pd.DataFrame:
-    """Main transform file to clean the data and validate data."""
-    plant_metrics_dt = convert_datatypes(load_data(filename))
-    plant_metrics_round = round_floats(plant_metrics_dt, decimals)
-    plant_metrics = remove_punctuation(
-        verify_emails(plant_metrics_round, regex))
-
-    return plant_metrics.to_csv(clean_filename)
-
-
 def remove_punctuation(dataframe: pd.DataFrame):
     """Function to remove extra punctuation from specific columns."""
 
@@ -63,6 +53,26 @@ def remove_punctuation(dataframe: pd.DataFrame):
             dataframe[col] = dataframe[col].str.replace(
                 r"[\"',]", "", regex=True)
     return dataframe
+
+
+def check_for_null_vals(dataframe: pd.DataFrame):
+    """Check for any null values, discard row if found."""
+    dataframe["soil_moisture"] = pd.to_numeric(
+        dataframe["soil_moisture"], errors='coerce')
+    dataframe["temperature"] = pd.to_numeric(
+        dataframe["temperature"], errors='coerce')
+    # cols = [""]
+    return dataframe.dropna(subset=["soil_moisture", "temperature"])
+
+
+def main_transform(filename: str, decimals: int, regex: str, clean_filename: str) -> pd.DataFrame:
+    """Main transform file to clean the data and validate data."""
+    plant_metrics_dt = convert_datatypes(load_data(filename))
+    plant_metrics_round = round_floats(plant_metrics_dt, decimals)
+    plant_metrics = remove_punctuation(
+        verify_emails(plant_metrics_round, regex))
+
+    return plant_metrics.to_csv(clean_filename)
 
 
 if __name__ == "__main__":
