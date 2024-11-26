@@ -60,7 +60,7 @@ jobs:
           scale: 1.5
     
       - name: Upload badge as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: badge
           path: .github/badges/test.svg
