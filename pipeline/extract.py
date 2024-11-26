@@ -2,6 +2,7 @@
 
 import csv
 import logging
+import asyncio
 import requests
 
 logging.basicConfig(
@@ -22,8 +23,8 @@ def extract_botanist_information(botanist_info: dict) -> dict:
 
 def extract_location_information(location_info: list) -> dict:
     """Extracts the location information from the API JSON"""
-    return {"longitude": location_info[0],
-            "latitude": location_info[1],
+    return {"latitude": location_info[1],
+            "longitude": location_info[0],
             "closest_town": location_info[2],
             "ISO_code": location_info[3]}
 
