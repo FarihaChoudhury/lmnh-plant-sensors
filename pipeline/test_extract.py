@@ -26,8 +26,8 @@ def sample_api_information():
         "last_watered": "Test time 1",
         "name": "Test Test",
         "origin_location": [
-            "1",
             "0",
+            "1",
             "London",
             "GB",
         ],
@@ -51,7 +51,7 @@ def test_extract_botanist_information():
 
 def test_extract_location_information():
     input_data = ["1", "0", "London", "GB"]
-    output_data = {"longitude": "1", "latitude": "0",
+    output_data = {"latitude": "0", "longitude": "1",
                    "closest_town": "London", "ISO_code": "GB"}
     assert extract_location_information(input_data) == output_data
 
@@ -96,8 +96,8 @@ def test_write_to_csv(mock_open, sample_api_information):
             "name": "Test Test",
             "email": "test@test.com",
             "phone": "+0000 111222",
-            "longitude": "1",
-            "latitude": "0",
+            "latitude": "1",
+            "longitude": "0",
             "closest_town": "London",
             "ISO_code": "GB",
             "plant_name": "Test Test",
@@ -112,7 +112,7 @@ def test_write_to_csv(mock_open, sample_api_information):
     write_to_csv(data, "test.csv")
     handle = mock_open()
     handle.write.assert_any_call(
-        "name,email,phone,longitude,latitude,closest_town,ISO_code,plant_name,plant_scientific_name,plant_image_url,temperature,soil_moisture,recording_taken,last_watered\r\n"
+        "name,email,phone,latitude,longitude,closest_town,ISO_code,plant_name,plant_scientific_name,plant_image_url,temperature,soil_moisture,recording_taken,last_watered\r\n"
     )
     handle.write.assert_any_call(
         "Test Test,test@test.com,+0000 111222,1,0,London,GB,Test Test,Test Test,https://test.jpg,0,1,Test time 2,Test time 1\r\n"
