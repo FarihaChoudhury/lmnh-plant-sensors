@@ -3,5 +3,3 @@ pytest-cov
 requests
 aiohttp
 certifi
-ssl
-asyncio
