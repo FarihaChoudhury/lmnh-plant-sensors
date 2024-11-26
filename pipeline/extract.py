@@ -1,9 +1,11 @@
+"""Extracts plant information from an API"""
+
 import csv
 import logging
 import asyncio
 import aiohttp
+import certifi
 import ssl
-import certifi  # Make sure to install this with: pip install certifi
 
 logging.basicConfig(
     level=logging.INFO,
@@ -61,7 +63,7 @@ async def fetch_plant_data(session: aiohttp.ClientSession, number: int) -> dict:
     """Fetches and processes the data for a single plant ID"""
     url = f"https://data-eng-plants-api.herokuapp.com/plants/{number}"
     try:
-        async with session.get(url, timeout=10) as response:
+        async with session.get(url, timeout=30) as response:
             if response.status == 200:
                 api_information = await response.json()
                 botanist = await extract_botanist_information(api_information['botanist'])
@@ -83,23 +85,20 @@ async def fetch_plant_data(session: aiohttp.ClientSession, number: int) -> dict:
                 logging.error(
                     "Failed with status code: %s, plant ID: %s", response.status, number)
                 return None
-    except Exception as e:
-        logging.error("Error fetching data for plant ID %s: %s",
-                      number, str(e))
+    except aiohttp.ClientError as e:
+        logging.error(f"Error fetching data for plant ID {number}: {e}")
         return None
 
 
 async def fetch_and_collect_data() -> list:
     """Fetches data concurrently for all plants and returns it as a list of dictionaries"""
-    # Create SSL context using certifi
     ssl_context = ssl.create_default_context(cafile=certifi.where())
 
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context)) as session:
         tasks = [fetch_plant_data(session, number)
-                 for number in range(50)]  # Create a list of tasks
-        results = await asyncio.gather(*tasks)  # Run all tasks concurrently
+                 for number in range(51)]
+        results = await asyncio.gather(*tasks)
 
-        # Filter out None results
         return [result for result in results if result is not None]
 
 
