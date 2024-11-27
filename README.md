@@ -1,5 +1,5 @@
 # Liverpool Natural History Museum: Plant Health Monitoring System
-![Pylint Score](.github/badges/pylint.svg)
+![Pylint Score](.github/badges/pylint.svg)  
 ![Pytest Score](.github/badges/test.svg)
 
 <!-- TABLE OF CONTENTS -->
