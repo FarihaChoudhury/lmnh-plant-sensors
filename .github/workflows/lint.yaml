@@ -54,7 +54,7 @@ jobs:
       - name: List generated files for debugging
         run: ls -R .github/badges
 
-      - name: Commit test badge
+      - name: Commit the test badge
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
