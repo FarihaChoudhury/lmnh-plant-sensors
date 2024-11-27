@@ -35,14 +35,17 @@ pip3 install -r requirements.txt
 ## Files Explained
 - `etl.py` - Runs the whole ETL pipeline, from extract to loading to rds.
 - `extract.py` - establishes a connection to the Heroku API to extract plant metrics data generated every minute, ensuring seamless data retrieval for further processing.
-- `test_extract.py` - this test file employs patching techniques to mock external dependencies and validate the functionality of `extract.py`, including the correct extraction of plant metrics, while preventing any real-world API calls. Has a 71% test coverage.
 - `transform.py` - this file performs data cleaning tasks, such as removing null values, converting columns to appropriate data types, and ensuring numerical consistency by rounding values to predefined precision levels.
-- `test_transform.py` - this test file verifies the main functions in `transform.py` through unit tests, achieving 74% test coverage with pytest, and ensuring that data transformation is performed accurately without introducing errors.
 - `load.py` - this file loads takes clean data from transform and loads it into the Microsoft SQL Server hosted on RDS AWS.
-- `test_load.py` - this test file verifies the core functions in `load.py` through unit tests.
+
 - `schema.sql` - this SQL script establishes a relational database structure within a specified schema to store and manage plant-related information. Known data is seeded to the tables.
 - `reset.sh` - this bash script loads environment variables and utilises them in the running of `schema.sql` in order to create a Microsoft SQL Server database.
 - `connect.sh` - this bash script loads environment variables to connect to the created Microsoft SQL Server database.
+
+- `test_extract.py` - this test file employs patching techniques to mock external dependencies and validate the functionality of `extract.py`, including the correct extraction of plant metrics, while preventing any real-world API calls. Has a 71% test coverage.
+- `test_transform.py` - this test file verifies the main functions in `transform.py` through unit tests, achieving 74% test coverage with pytest, and ensuring that data transformation is performed accurately without introducing errors.
+- `test_load.py` - this test file verifies the core functions in `load.py` through unit tests.
+
 
 ## Secrets Management
 Before running the script, you need to set up your AWS credentials. Create a new file called `.env` in the `pipeline` directory and add the following lines, with your actual AWS keys and database details:
