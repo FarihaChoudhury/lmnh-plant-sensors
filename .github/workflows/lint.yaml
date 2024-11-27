@@ -1,5 +1,8 @@
 name: Lint Workflow
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
