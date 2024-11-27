@@ -73,9 +73,11 @@ class TestTransformCleaning():
     def test_null_value_discard_row(self):
         """Function tests discarding of row with null temperature value."""
         test_data = {
+            "plant_id": [1, 2],
+            "name": ["test1", "test2"],
             "temperature": [None, 45],
             "soil_moisture": [21.34, 23.65]
         }
         df = check_for_null_vals(pd.DataFrame(test_data))
-        assert df.shape == (1, 2)
+        assert df.shape == (1, 4)
         assert not df.isnull().values.any()
