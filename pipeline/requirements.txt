@@ -4,6 +4,4 @@ requests
 pandas
 python-dotenv
 pymssql
-aiohttp
-certifi
-asyncio
+
