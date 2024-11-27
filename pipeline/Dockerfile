@@ -4,8 +4,9 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY clean_plant_info.csv .
-
+COPY extract.py .
+COPY transform.py .
 COPY load.py .
+COPY etl.py .
 
-CMD ["python", "load.py"]
+CMD ["python", "etl.py"]
