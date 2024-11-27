@@ -1,6 +1,10 @@
 pytest
 pytest-cov
 requests
+pandas
+python-dotenv
+pymssql
 aiohttp
 certifi
-pandas 
+asyncio
+pytest-asyncio

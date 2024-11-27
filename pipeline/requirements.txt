@@ -1,6 +1,7 @@
 pytest
 pytest-cov
 requests
-aiohttp
-certifi
-pandas 
+pandas
+python-dotenv
+pymssql
+
