@@ -54,12 +54,10 @@ jobs:
       - name: List generated files for debugging
         run: ls -R .github/badges
 
-      - name: Commit badge
+      - name: Commit test badge
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git pull
-          git add .github/badges/pylint.svg
-          git checkout main
-          git commit -m "Update pylint badge" || echo "No changes to commit"
+          git add .github/badges/test.svg
+          git commit -m "Update test results badge" || echo "No changes to commit"
           git push || echo "No changes to push"
