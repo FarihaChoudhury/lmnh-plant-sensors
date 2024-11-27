@@ -8,3 +8,4 @@ aiohttp
 certifi
 asyncio
 pytest-asyncio
+pylint
