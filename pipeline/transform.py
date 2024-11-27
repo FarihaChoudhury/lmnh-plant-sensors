@@ -3,7 +3,6 @@
 
 import re
 import pandas as pd
-import string
 
 
 FILENAME = "Plant_information.csv"
@@ -12,68 +11,58 @@ EMAIL_REGEX = """(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-
 CLEAN_FILENAME = "clean_plant_info.csv"
 
 
-def load_data(filename: str) -> pd.DataFrame:
-    """Create dataframe with plant information collected from API."""
-    return pd.read_csv(filename)
-
-
-def convert_datatypes(dataframe: pd.DataFrame) -> pd.DataFrame:
+def convert_datatypes(plants_metrics: pd.DataFrame) -> pd.DataFrame:
     """Convert columns to correct datatypes."""
-    dataframe["recording_taken"] = pd.to_datetime(
-        dataframe["recording_taken"], format='%Y-%m-%d %H:%M:%S')
-    dataframe["last_watered"] = pd.to_datetime(
-        dataframe["last_watered"], format='%a, %d %b %Y %H:%M:%S %Z', utc=True)
-    dataframe["last_watered"] = pd.to_datetime(dataframe["last_watered"].dt.strftime(
+    plants_metrics["recording_taken"] = pd.to_datetime(
+        plants_metrics["recording_taken"], format='%Y-%m-%d %H:%M:%S')
+    plants_metrics["last_watered"] = pd.to_datetime(
+        plants_metrics["last_watered"], format='%a, %d %b %Y %H:%M:%S %Z', utc=True)
+    plants_metrics["last_watered"] = pd.to_datetime(plants_metrics["last_watered"].dt.strftime(
         "%Y-%m-%d %H:%M:%S"))
-    return dataframe
+    return plants_metrics
 
 
-def round_floats(dataframe: pd.DataFrame, decimal_places: int) -> pd.DataFrame:
+def round_floats(plants_metrics: pd.DataFrame, decimal_places: int) -> pd.DataFrame:
     """Round all float columns to 2 decimal places."""
     cols_to_round = ["longitude", "latitude", "temperature", "soil_moisture"]
     for col in cols_to_round:
-        dataframe[col] = dataframe[col].round(decimal_places).apply(
+        plants_metrics[col] = plants_metrics[col].round(decimal_places).apply(
             lambda x: f"{x:.2f}" if isinstance(x, (int, float)) else x)
-    return dataframe
+    return plants_metrics
 
 
-def verify_emails(dataframe: pd.DataFrame, email_regex: str) -> pd.DataFrame:
+def verify_emails(plants_metrics: pd.DataFrame, email_regex: str) -> pd.DataFrame:
     """Verify the emails are proper emails using regex."""
-    dataframe["email"] = dataframe["email"].apply(
+    plants_metrics["email"] = plants_metrics["email"].apply(
         lambda x: x if re.match(email_regex, x) else None)
-    return dataframe
+    return plants_metrics
 
 
-def remove_punctuation(dataframe: pd.DataFrame):
+def remove_punctuation(plants_metrics: pd.DataFrame):
     """Function to remove extra punctuation from specific columns."""
 
     columns = ["name", "plant_name", "plant_scientific_name"]
     for col in columns:
-        if dataframe[col].dtype == 'object':
-            dataframe[col] = dataframe[col].str.replace(
+        if plants_metrics[col].dtype == 'object':
+            plants_metrics[col] = plants_metrics[col].str.replace(
                 r"[\"',]", "", regex=True)
-    return dataframe
+    return plants_metrics
 
 
-def check_for_null_vals(dataframe: pd.DataFrame):
+def check_for_null_vals(plants_metrics: pd.DataFrame):
     """Check for any null values, discard row if found."""
-    dataframe["soil_moisture"] = pd.to_numeric(
-        dataframe["soil_moisture"], errors='coerce')
-    dataframe["temperature"] = pd.to_numeric(
-        dataframe["temperature"], errors='coerce')
+    plants_metrics["soil_moisture"] = pd.to_numeric(
+        plants_metrics["soil_moisture"], errors='coerce')
+    plants_metrics["temperature"] = pd.to_numeric(
+        plants_metrics["temperature"], errors='coerce')
 
-    return dataframe.dropna(subset=["soil_moisture", "temperature", "plant_id", "name"])
-
-
-def main_transform(filename: str, decimals: int, regex: str, clean_filename: str) -> pd.DataFrame:
-    """Main transform file to clean the data and validate data."""
-    plant_metrics_dt = convert_datatypes(load_data(filename))
-    plant_metrics_round = round_floats(plant_metrics_dt, decimals)
-    plant_metrics = remove_punctuation(
-        verify_emails(plant_metrics_round, regex))
-
-    return plant_metrics.to_csv(clean_filename)
+    return plants_metrics.dropna(subset=["soil_moisture", "temperature", "plant_id", "name"])
 
 
-if __name__ == "__main__":
-    df = main_transform(FILENAME, DECIMAL_PLACES, EMAIL_REGEX, CLEAN_FILENAME)
+def main(extracted_plants_data: list[dict]) -> pd.DataFrame:
+    """Cleans the plant readings and validate the data. Returns cleaned data as a Pandas dataframe."""
+    plant_metrics_dt = convert_datatypes(extracted_plants_data)
+    plant_metrics_round = round_floats(plant_metrics_dt, DECIMAL_PLACES)
+    transformed_plant_metrics = remove_punctuation(
+        verify_emails(plant_metrics_round, EMAIL_REGEX))
+    return transformed_plant_metrics
