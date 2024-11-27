@@ -12,11 +12,6 @@ EMAIL_REGEX = """(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-
 CLEAN_FILENAME = "clean_plant_info.csv"
 
 
-def load_data(filename: str) -> pd.DataFrame:
-    """Create dataframe with plant information collected from API."""
-    return pd.read_csv(filename)
-
-
 def convert_datatypes(plants_metrics: pd.DataFrame) -> pd.DataFrame:
     """Convert columns to correct datatypes."""
     plants_metrics["recording_taken"] = pd.to_datetime(
