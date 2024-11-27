@@ -1,11 +1,11 @@
 """Extracts plant information from an API"""
 
-import csv
 import logging
 import asyncio
 import ssl
 import aiohttp
 import certifi
+import pandas as pd
 
 logging.basicConfig(
     level=logging.INFO,
@@ -101,19 +101,10 @@ async def fetch_and_collect_data() -> list[dict]:
         return [result for result in results if result is not None]
 
 
-def write_to_csv(data: list[dict], csv_file: str) -> None:
-    """Writes the collected data to the CSV file"""
-    if data:
-        with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, fieldnames=data[0].keys())
-            writer.writeheader()
-            writer.writerows(data)
-        logging.info("Data written to CSV file: %s", csv_file)
-    else:
-        logging.error("No data to write to CSV.")
+def main() -> pd.DataFrame:
+    """ Extracts the plant insights from the API and returns the necessary data as a list of dictionaries."""
+    return pd.DataFrame(asyncio.run(fetch_and_collect_data()))
 
 
 if __name__ == "__main__":
-    CSV_FILE = "Plant_information.csv"
-    collected_data = asyncio.run(fetch_and_collect_data())
-    write_to_csv(collected_data, CSV_FILE)
+    main()
