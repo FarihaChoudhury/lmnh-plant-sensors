@@ -4,7 +4,7 @@
 from io import StringIO
 import pytest
 import pandas as pd
-from transform import (load_data, convert_datatypes,
+from transform import (convert_datatypes, remove_punctuation,
                        round_floats, verify_emails, check_for_null_vals)
 
 
@@ -33,12 +33,6 @@ class TestTransformCleaning():
             "last_watered": ["Mon, 25 Nov 2024 14:03:04 GMT"]
         })
         return test_data
-
-    def test_successful_load_data(self, sample_csv_data):
-        """Test csv data is loaded into df successfully."""
-        df = load_data(sample_csv_data)
-        assert df.shape == (1, 9)
-        assert "last_watered" in df.columns
 
     def test_recording_taken_data_type(self, sample_pd):
         """Test that the recording_taken data type is datetime after."""
@@ -81,3 +75,15 @@ class TestTransformCleaning():
         df = check_for_null_vals(pd.DataFrame(test_data))
         assert df.shape == (1, 4)
         assert not df.isnull().values.any()
+
+    def test_remove_punctuation(self):
+        test_data = pd.DataFrame({
+            "name": ['"fake\'Name"'],
+            "plant_name": ["'Another\"Name'"],
+            "plant_scientific_name": ["\",Scientific\""]
+        })
+        result = remove_punctuation(test_data)
+
+        assert result["name"].values[0] == "fakeName"
+        assert result["plant_name"].values[0] == "AnotherName"
+        assert result["plant_scientific_name"].values[0] == "Scientific"

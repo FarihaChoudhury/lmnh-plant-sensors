@@ -3,7 +3,6 @@
 
 import re
 import pandas as pd
-import string
 
 
 FILENAME = "Plant_information.csv"
@@ -67,7 +66,3 @@ def main(extracted_plants_data: list[dict]) -> pd.DataFrame:
     transformed_plant_metrics = remove_punctuation(
         verify_emails(plant_metrics_round, EMAIL_REGEX))
     return transformed_plant_metrics
-
-
-if __name__ == "__main__":
-    ...
