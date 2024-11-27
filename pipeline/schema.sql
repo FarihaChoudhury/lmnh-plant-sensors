@@ -10,7 +10,6 @@ DROP TABLE IF EXISTS epsilon.plant;
 DROP TABLE IF EXISTS epsilon.botanist;
 DROP TABLE IF EXISTS epsilon.location;
 
-
 CREATE TABLE epsilon.location (
     location_id INT IDENTITY(1,1) PRIMARY KEY,
     longitude FLOAT NOT NULL,
@@ -43,6 +42,16 @@ CREATE TABLE epsilon.plant_metric (
     botanist_id SMALLINT NOT NULL,
     plant_id SMALLINT NOT NULL,
     FOREIGN KEY (botanist_id) REFERENCES epsilon.botanist(botanist_id) ON DELETE CASCADE,
+    FOREIGN KEY (plant_id) REFERENCES epsilon.plant(plant_id) ON DELETE CASCADE
+);
+
+CREATE TABLE epsilon.plants_archive (
+    plant_archive_id INT IDENTITY(1,1) PRIMARY KEY,
+    avg_temperature FLOAT NOT NULL,
+    avg_soil_moisture FLOAT NOT NULL,
+    watered_count SMALLINT NOT NULL,
+    last_recorded DATETIME2 NOT NULL,
+    plant_id SMALLINT NOT NULL,
     FOREIGN KEY (plant_id) REFERENCES epsilon.plant(plant_id) ON DELETE CASCADE
 );
 
