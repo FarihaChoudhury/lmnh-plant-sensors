@@ -26,7 +26,9 @@ def calculate_plant_water_count(conn: Connection, plant_id: int) -> int:
 
 def calculate_avg_soil_moisture(conn: Connection, plant_id: int) -> int:
     """Calculates the average soil moisture level for a given plant in the last 24 hours"""
-    ...
+    query = """SELECT AVG(moisture_levels) as avg_temp
+                FROM plant_metrics
+                WHERE plant_id = %s AND timestamp >= """
 
 
 def calculate_avg_temperature(conn: Connection, plant_id: int) -> int:
