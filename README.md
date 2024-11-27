@@ -2,7 +2,7 @@
 <!-- [![Pytest Pass Rate](.github/badges/test.svg)](https://github.com/SurinaCS/lmnh-plant-sensors/actions) -->
 
 ![Pylint Score](.github/badges/pylint.svg)
-![Pytest Score](.github/badges/pytest.svg)
+![Pytest Score](.github/badges/test.svg)
 
 <!-- TABLE OF CONTENTS -->
 <details>
