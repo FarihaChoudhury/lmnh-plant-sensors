@@ -1,7 +1,8 @@
 # Liverpool Natural History Museum: Plant Health Monitoring System
-[![Pytest Pass Rate](.github/badges/test.svg)](https://github.com/SurinaCS/lmnh-plant-sensors/actions)
+<!-- [![Pytest Pass Rate](.github/badges/test.svg)](https://github.com/SurinaCS/lmnh-plant-sensors/actions) -->
 
 ![Pylint Score](.github/badges/pylint.svg)
+![Pytest Score](.github/badges/pytest.svg)
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -57,7 +58,6 @@ You must have a `.env` file containing:
    
 ## Folders Explained
 These folders are found this repository:     
-<<<<<<< HEAD
 - **[archive](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/archive)**     
    This folder contains the necessary files to move the data extracted from the previous 24hrs to the S3 bucket where 'archived' data is stored.
 - **[dashboard](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/dashboard)**
