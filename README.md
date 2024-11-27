@@ -42,7 +42,11 @@ Prerequisites:
    git clone https://github.com/SurinaCS/Coursework-Data-Engineering-Week-5.git
    ```
 2. Navigate into the cloned repository.
-3. Install all required dependencies:
+3. Install `feedtds`:
+   ```sh
+   brew install freetds
+   ```
+4. Install all required dependencies:
    ```sh
    pip install -r requirements.txt
    ```
