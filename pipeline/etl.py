@@ -1,8 +1,5 @@
 """Runs the combined functions from extract.py, transform.py and load.py"""
 
-import logging
-import asyncio
-import pandas as pd
 from dotenv import load_dotenv
 from extract import main as extract
 from transform import main as transform
