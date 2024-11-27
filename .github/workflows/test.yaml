@@ -34,21 +34,26 @@ jobs:
           pytest --maxfail=1 --disable-warnings --tb=short > pytest-report.txt || true
           total_tests=$(grep -oP '(?<=collected )\d+(?= tests)' pytest-report.txt)
           passed_tests=$(grep -oP '(?<=passed=)\d+' pytest-report.txt)
-          percentage=$(echo "scale=2; $passed_tests/$total_tests*100" | bc)
-          echo "PYTEST_PERCENTAGE=$percentage" >> $GITHUB_ENV
+          echo "PYTEST_PASSED=$passed_tests" >> $GITHUB_ENV
+          echo "PYTEST_TOTAL=$total_tests" >> $GITHUB_ENV
 
       - name: Generate pytest badge
         run: |
           mkdir -p .github/badges
-          percentage=${{ env.PYTEST_PERCENTAGE }}
+          passed_tests=${{ env.PYTEST_PASSED }}
+          total_tests=${{ env.PYTEST_TOTAL }}
           color="green"
-          if (( $(echo "$percentage < 80" | bc -l) )); then
+          
+          # Set color based on the number of passed tests out of total tests
+          if (( passed_tests < total_tests * 0.8 )); then
             color="yellow"
           fi
-          if (( $(echo "$percentage < 50" | bc -l) )); then
+          if (( passed_tests < total_tests * 0.5 )); then
             color="red"
           fi
-          echo '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20" role="img" aria-label="Pytest Percentage"><linearGradient id="a" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><rect rx="3" width="120" height="20" fill="#555"/><rect rx="3" x="60" width="60" height="20" fill="'$color'"/><path fill="'$color'" d="M60 0h4v20h-4z"/><rect rx="3" width="120" height="20" fill="url(#a)"/><g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11"><text x="30" y="15" fill="#010101" fill-opacity=".3">Pytest</text><text x="30" y="14">Pytest</text><text x="90" y="15" fill="#010101" fill-opacity=".3">'$percentage'%</text><text x="90" y="14">'$percentage'%</text></g></svg>' > .github/badges/pytest.svg
+
+          # Create badge with passing tests/total tests
+          echo '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20" role="img" aria-label="Pytest Results"><linearGradient id="a" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><rect rx="3" width="120" height="20" fill="#555"/><rect rx="3" x="60" width="60" height="20" fill="'$color'"/><path fill="'$color'" d="M60 0h4v20h-4z"/><rect rx="3" width="120" height="20" fill="url(#a)"/><g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11"><text x="30" y="15" fill="#010101" fill-opacity=".3">Pytest</text><text x="30" y="14">Pytest</text><text x="90" y="15" fill="#010101" fill-opacity=".3">'$passed_tests'/'$total_tests'</text><text x="90" y="14">'$passed_tests'/'$total_tests'</text></g></svg>' > .github/badges/pytest.svg
 
       - name: List generated files for debugging
         run: ls -R .github/badges
