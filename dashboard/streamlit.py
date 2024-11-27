@@ -10,6 +10,8 @@ from pymssql import connect, Connection, exceptions, Cursor
 
 COLOUR_PALETTE = ["#84b067", "#a7de83", "#4b633b", "#2c3b23"]
 
+AltairChart = alt.Chart
+
 
 def get_connection() -> Connection:
     """Connects to Microsoft SQL Server Database"""
@@ -41,7 +43,7 @@ def get_cursor(connection: Connection) -> Cursor:
     return connection.cursor()
 
 
-def homepage():
+def homepage() -> None:
     """Homepage showing visualizations for LNMH."""
     st.title("LNMH Plant Monitoring System")
     connection = get_connection()
@@ -53,10 +55,32 @@ def homepage():
     filtered_data = filter_by_plant(
         filter_plant, live_metrics)
 
-    st.altair_chart(plot_live_temp(filtered_data['plant_temp']))
-    st.altair_chart(plot_live_moisture(filtered_data['moisture']))
-    display_table(live_metrics[['plant_id', 'plant_name']])
-    st.write(live_metrics)
+    display_charts(filtered_data)
+
+    # st.altair_chart(plot_live_temp(filtered_data['plant_temp']))
+    # st.altair_chart(plot_live_moisture(filtered_data['moisture']))
+
+
+def display_charts(data: dict) -> None:
+    temp, x = st.columns((2, 1))
+    with temp:
+        st.altair_chart(plot_live_temp(data['metrics']))
+    with x:
+        table_data = get_data_plant_table(data)
+        st.write(
+            table_data.style.set_table_styles([
+                {'selector': 'th', 'props': [('text-align', 'left')]},
+                {'selector': 'td', 'props': [('width', '100px')]},
+                {'selector': 'col1', 'props': [('width', '200px')]}
+            ])
+        )
+    st.write(" ")
+
+    moisture, y = st.columns((2, 1))
+    with moisture:
+        st.altair_chart(plot_live_moisture(data['metrics']))
+    with y:
+        st.write(' nnnoooooo ')
 
 
 def get_plant_filter(plant_names: list) -> str:
@@ -66,22 +90,23 @@ def get_plant_filter(plant_names: list) -> str:
         ['All Plants'] + plant_names)
 
 
-def filter_by_plant(filter: str, plant_metrics: pd.DataFrame):
+def filter_by_plant(filter: str, plant_metrics: pd.DataFrame) -> dict:
     """Filter visualisations based off plant name."""
+
     if filter != 'All Plants':
         return {
-            'plant_temp': plant_metrics[plant_metrics['plant_name'] == filter],
-            'moisture': plant_metrics[plant_metrics['plant_name'] == filter]
+            'metrics': plant_metrics[plant_metrics['plant_name'] == filter]
         }
     return {
-        'plant_temp': plant_metrics,
-        'moisture': plant_metrics
-    }
+        'metrics': plant_metrics}
 
 
 def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
+    """Function gets the latest plant health metrics including: temperature, soil moisture levels
+    plant name, time of recording and last_watered, and extracts these to a dataframe."""
     query = f"""
-        SELECT pm.temperature, pm.soil_moisture, latest_recording_info.latest_time, p.plant_name, pm.plant_id
+        SELECT pm.temperature, pm.soil_moisture, latest_recording_info.latest_time,
+          p.plant_name, pm.plant_id, pm.last_watered
         FROM {environ['SCHEMA_NAME']}.plant_metric pm
         JOIN (SELECT plant_id,
             MAX(recording_taken) as latest_time
@@ -97,8 +122,8 @@ def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
     return pd.DataFrame(result)
 
 
-def plot_live_temp(data: pd.DataFrame):
-    """Chart to show current temp and soil moisture levels."""
+def plot_live_temp(data: pd.DataFrame) -> AltairChart:
+    """Function to create a chart to show current temperature for each plant ID."""
     data['plant_id_name'] = data['plant_name'] + \
         ' (ID: ' + data['plant_id'].astype(str) + ')'
 
@@ -128,7 +153,8 @@ def plot_live_temp(data: pd.DataFrame):
     return chart
 
 
-def plot_live_moisture(data: pd.DataFrame):
+def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
+    """Function to create a plot for the live soil moisture levels of each plant."""
     data['plant_id_name'] = data['plant_name'] + \
         ' (ID: ' + data['plant_id'].astype(str) + ')'
 
@@ -158,7 +184,9 @@ def plot_live_moisture(data: pd.DataFrame):
     return chart
 
 
-def create_table_plant_id_name(data: pd.DataFrame):
+# fix this (doesnt work)
+def create_df_plant_id_name(data: pd.DataFrame) -> pd.DataFrame:
+    """Create the data frame for the legend showing plant id and name."""
 
     return data[['plant_name', 'plant_id']].rename(columns={
         'plant_id': 'Plant ID',
@@ -167,12 +195,22 @@ def create_table_plant_id_name(data: pd.DataFrame):
                                                                  {'selector': 'col1', 'props': [('width', '200px')]}])
 
 
-def display_table(data):
-    st.write(create_table_plant_id_name(data))
-    return
+def get_data_plant_table(data: dict) -> None:
+    """Display a table with plant IDs and names in Streamlit."""
+    df = pd.DataFrame({
+        'plant_id': data['metrics']['plant_id'],
+        'plant_name': data['metrics']['plant_name']
+    })
+
+    # Rename columns, set index, and sort
+    table_data = df.rename(columns={
+        'plant_id': 'Plant ID',
+        'plant_name': 'Plant Name'
+    }).set_index('Plant ID').sort_index()
+
+    return table_data
 
 
 if __name__ == "__main__":
     load_dotenv()
-
     homepage()
