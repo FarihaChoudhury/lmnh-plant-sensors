@@ -113,6 +113,10 @@ def write_to_csv(data: list[dict], csv_file: str) -> None:
         logging.error("No data to write to CSV.")
 
 
+def main() -> list[dict]:
+    collected_data = asyncio.run(fetch_and_collect_data())
+
+
 if __name__ == "__main__":
     CSV_FILE = "Plant_information.csv"
     collected_data = asyncio.run(fetch_and_collect_data())

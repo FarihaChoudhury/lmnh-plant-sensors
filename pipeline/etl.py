@@ -5,8 +5,9 @@ import asyncio
 import pandas as pd
 from dotenv import load_dotenv
 from pymssql import exceptions
-from extract import fetch_and_collect_data
-from transform import convert_datatypes, round_floats, remove_punctuation, verify_emails
+
+from extract import main as extract_main
+from transform import main as transform_main, convert_datatypes, round_floats, remove_punctuation, verify_emails
 from load import get_botanists_id_mapping, get_connection, insert_into_plant_metric
 
 DECIMAL_PLACES = 2
@@ -23,7 +24,8 @@ def main() -> None:
     """
     load_dotenv()
 
-    extracted_data = pd.DataFrame(asyncio.run(fetch_and_collect_data()))
+    extracted_data = extract_main()
+    # extracted_data = pd.DataFrame(asyncio.run(fetch_and_collect_data()))
 
     plant_metrics_dt = convert_datatypes(extracted_data)
     plant_metrics_round = round_floats(plant_metrics_dt, DECIMAL_PLACES)
