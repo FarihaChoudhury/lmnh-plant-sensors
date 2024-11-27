@@ -1,5 +1,8 @@
 """Runs the combined functions from extract.py, transform.py and load.py"""
 
+# pylint: disable=broad-exception-caught
+# pylint: disable=line-too-long
+
 import logging
 import asyncio
 import pandas as pd
