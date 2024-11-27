@@ -1,92 +1,92 @@
-name: Complete Build Workflow - Test, Lint
+# name: Complete Build Workflow - Test, Lint
 
-on:
-  push:
-    branches:
-      - '*'
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - '*'
+#   pull_request:
+#     branches:
+#       - main
+#   workflow_dispatch:
 
-jobs:
+# jobs:
   
-  test: #PYTEST
-    runs-on: ubuntu-latest
+#   test: #PYTEST
+#     runs-on: ubuntu-latest
     
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.11'
-          cache: 'pip'
+#       - name: Set up Python 3.11
+#         uses: actions/setup-python@v3
+#         with:
+#           python-version: '3.11'
+#           cache: 'pip'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest pylint
-          for FILE in $(find . -name 'requirements.txt'); do
-            pip install -r $FILE
-          done
+#       - name: Install dependencies
+#         run: |
+#           python -m pip install --upgrade pip
+#           pip install pytest pylint
+#           for FILE in $(find . -name 'requirements.txt'); do
+#             pip install -r $FILE
+#           done
 
-      - name: Run pytest
-        run: pytest
-        continue-on-error: true
+#       - name: Run pytest
+#         run: pytest
+#         continue-on-error: true
 
-      - name: Parse pytest results to calculate success percentage
-        id: calculate_percentage
-        run: |
-          total=$(grep -oP '(?<=tests=")[0-9]+' pytest-results.xml)
-          failures=$(grep -oP '(?<=failures=")[0-9]+' pytest-results.xml)
-          errors=$(grep -oP '(?<=errors=")[0-9]+' pytest-results.xml)
-          skips=$(grep -oP '(?<=skipped=")[0-9]+' pytest-results.xml)
-          passed=$((total - failures - errors - skips))
-          percentage=$((100 * passed / total))
-          echo "Total tests: $total"
-          echo "Passed: $passed"
-          echo "Percentage: $percentage%"
-          echo "::set-output name=percentage::$percentage"
+#       - name: Parse pytest results to calculate success percentage
+#         id: calculate_percentage
+#         run: |
+#           total=$(grep -oP '(?<=tests=")[0-9]+' pytest-results.xml)
+#           failures=$(grep -oP '(?<=failures=")[0-9]+' pytest-results.xml)
+#           errors=$(grep -oP '(?<=errors=")[0-9]+' pytest-results.xml)
+#           skips=$(grep -oP '(?<=skipped=")[0-9]+' pytest-results.xml)
+#           passed=$((total - failures - errors - skips))
+#           percentage=$((100 * passed / total))
+#           echo "Total tests: $total"
+#           echo "Passed: $passed"
+#           echo "Percentage: $percentage%"
+#           echo "::set-output name=percentage::$percentage"
   
   
-  badge: 
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps: 
-      - name: Checkout Repository 
-        uses: actions/checkout@v4
+#   badge: 
+#     needs: [test]
+#     runs-on: ubuntu-latest
+#     steps: 
+#       - name: Checkout Repository 
+#         uses: actions/checkout@v4
       
-      # Create the directory where badges will be saved, if needed
-      - name: Create destination directory for badge
-        env:
-          BADGE_PATH: .github/badges/test.svg
-        run: mkdir -p "${BADGE_PATH%/*}"
-      # Display build completed 
-      - name: Generate the badge SVG image
-        uses: emibcn/badge-action@v1
-        id: test_badge
-        with:
-          label: 'Pytest pass rate'
-          status: '${{ needs.test.outputs.percentage }}%'
-          color: 'blue'
-          path: .github/badges/test.svg
-          scale: 1.5
+#       # Create the directory where badges will be saved, if needed
+#       - name: Create destination directory for badge
+#         env:
+#           BADGE_PATH: .github/badges/test.svg
+#         run: mkdir -p "${BADGE_PATH%/*}"
+#       # Display build completed 
+#       - name: Generate the badge SVG image
+#         uses: emibcn/badge-action@v1
+#         id: test_badge
+#         with:
+#           label: 'Pytest pass rate'
+#           status: '${{ needs.test.outputs.percentage }}%'
+#           color: 'blue'
+#           path: .github/badges/test.svg
+#           scale: 1.5
     
-      - name: Upload badge as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: badge
-          path: .github/badges/test.svg
-          if-no-files-found: ignore
+#       - name: Upload badge as artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: badge
+#           path: .github/badges/test.svg
+#           if-no-files-found: ignore
      
-      - name: Committing logs and badge to the repository
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git pull
-          git add .github/badges/test.svg
-          git checkout main
-          git diff-index --quiet HEAD || git commit -am "Update Complete build"
-          git push
+#       - name: Committing logs and badge to the repository
+#         run: |
+#           git config --global user.name "github-actions"
+#           git config --global user.email "actions@github.com"
+#           git pull
+#           git add .github/badges/test.svg
+#           git checkout main
+#           git diff-index --quiet HEAD || git commit -am "Update Complete build"
+#           git push
