@@ -35,7 +35,7 @@ def get_connection() -> Connection:
         raise
 
 
-def get_botanists_id_mapping(connection: Connection, names: list) -> dict:
+def get_botanists_details(connection: Connection, names: list) -> dict:
     """Fetches botanist IDs for a list of names."""
     logging.info("Fetching botanist IDs for names: %s", names)
     query = f"""SELECT botanist_id, full_name FROM epsilon.botanist WHERE full_name IN ({
@@ -55,7 +55,7 @@ def get_botanists_id_mapping(connection: Connection, names: list) -> dict:
         raise
 
 
-def insert_into_plant_metric(connection: Connection, metric_df: pd.DataFrame, botanist_id_mapping: dict) -> None:
+def insert_plant_metric(conn: Connection, metric_df: pd.DataFrame, botanist_mapping: dict) -> None:
     """Inserts plant metric data into the database."""
     query = """INSERT INTO epsilon.plant_metric (temperature, soil_moisture,
                 recording_taken, last_watered, botanist_id, plant_id) 
@@ -67,17 +67,17 @@ def insert_into_plant_metric(connection: Connection, metric_df: pd.DataFrame, bo
             row['soil_moisture'],
             row['recording_taken'],
             row['last_watered'],
-            botanist_id_mapping.get(row['name']),
+            botanist_mapping.get(row['name']),
             row['plant_id']
         ), axis=1).tolist()
 
     if data_to_insert:
         try:
-            with connection.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.executemany(query, data_to_insert)
-                connection.commit()
+                conn.commit()
                 logging.info(
-                    f"Inserted {len(data_to_insert)} rows into the plant_metric table.")
+                    "Inserted %s rows into the plant_metric table.", len(data_to_insert))
         except exceptions.DatabaseError as e:
             logging.error(
                 "Database error while inserting plant metric data: %s", e)
@@ -99,10 +99,10 @@ def main(plant_metrics_df: pd.DataFrame):
         with get_connection() as conn:
             botanist_names = plant_metrics_df['name'].unique().tolist()
 
-            botanist_id_mapping = get_botanists_id_mapping(
+            botanist_id_mapping = get_botanists_details(
                 conn, botanist_names)
 
-            insert_into_plant_metric(
+            insert_plant_metric(
                 conn, plant_metrics_df, botanist_id_mapping)
     except exceptions.OperationalError as e:
         logging.error("Failed to connect to the database: %s", e)
@@ -110,7 +110,3 @@ def main(plant_metrics_df: pd.DataFrame):
     except Exception as e:
         logging.error(
             "An error occurred during the execution of the program: %s", e)
-
-
-if __name__ == "__main__":
-    main()

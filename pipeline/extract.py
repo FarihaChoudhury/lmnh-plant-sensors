@@ -1,6 +1,5 @@
 """Extracts plant information from an API"""
 
-import csv
 import logging
 import asyncio
 import ssl
