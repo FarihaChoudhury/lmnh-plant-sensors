@@ -55,7 +55,7 @@ def get_botanists_details(connection: Connection, names: list) -> dict:
         raise
 
 
-def insert_plant_metric(conn: Connection, metric_df: pd.DataFrame, botanist_mapping: dict) -> None:
+def insert_plant_metric(conn: Connection, metric_df: pd.DataFrame, botanist_details: dict) -> None:
     """Inserts plant metric data into the database."""
     query = """INSERT INTO epsilon.plant_metric (temperature, soil_moisture,
                 recording_taken, last_watered, botanist_id, plant_id) 
@@ -67,7 +67,7 @@ def insert_plant_metric(conn: Connection, metric_df: pd.DataFrame, botanist_mapp
             row['soil_moisture'],
             row['recording_taken'],
             row['last_watered'],
-            botanist_mapping.get(row['name']),
+            botanist_details.get(row['name']),
             row['plant_id']
         ), axis=1).tolist()
 
