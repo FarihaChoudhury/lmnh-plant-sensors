@@ -1,0 +1,11 @@
+FROM python:3.11
+WORKDIR /dashboard
+COPY requirements.txt . 
+RUN pip3 install -r requirements.txt
+
+COPY streamlit.py .
+
+RUN mkdir dashboard/
+
+EXPOSE 8501
+CMD ["streamlit", "run", "streamlit.py", , "--server.port=8501"]
