@@ -4,6 +4,7 @@ import logging
 import asyncio
 import pandas as pd
 from dotenv import load_dotenv
+from pymssql import exceptions
 from extract import fetch_and_collect_data
 from transform import convert_datatypes, round_floats, remove_punctuation, verify_emails
 from load import get_botanists_id_mapping, get_connection, insert_into_plant_metric
@@ -13,7 +14,13 @@ EMAIL_REGEX = """(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-
 
 
 def main() -> None:
-    """Runs the main functions for the ETL Pipeline"""
+    """
+    Executes the main ETL (Extract, Transform, Load) pipeline for plant metrics.
+
+    1. Extract: Fetching and collecting plant data asynchronously from an external API.
+    2. Transform: Cleaning, verifying, and transforming the data
+    3. Load: Storing the transformed data into a database:
+    """
     load_dotenv()
 
     extracted_data = pd.DataFrame(asyncio.run(fetch_and_collect_data()))
@@ -33,7 +40,9 @@ def main() -> None:
                 conn, botanist_names)
 
             insert_into_plant_metric(conn, metric_df, botanist_id_mapping)
-
+    except exceptions.OperationalError as e:
+        logging.error("Failed to connect to the database: %s", e)
+        raise
     except Exception as e:
         logging.error(
             "An error occurred during the execution of the program: %s", e)

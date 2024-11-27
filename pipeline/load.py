@@ -1,3 +1,5 @@
+"""Uploads data from a CSV file into a database"""
+
 from os import environ
 import logging
 from dotenv import load_dotenv
@@ -115,7 +117,9 @@ def main():
                 conn, botanist_names)
 
             insert_into_plant_metric(conn, metric_df, botanist_id_mapping)
-
+    except exceptions.OperationalError as e:
+        logging.error("Failed to connect to the database: %s", e)
+        raise
     except Exception as e:
         logging.error(
             "An error occurred during the execution of the program: %s", e)
