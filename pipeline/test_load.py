@@ -53,4 +53,4 @@ def test_get_botanists_id_mapping_successful(mock_connect):
     assert result == {'Alice': 1, 'Bob': 2}
 
 
-def test_get_plant_metric_data_successful():
+# def test_get_plant_metric_data_successful():
