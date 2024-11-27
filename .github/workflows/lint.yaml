@@ -1,4 +1,4 @@
-name: Complete Build Workflow - Test, Lint
+name: Lint Workflow
 
 on:
   push:
@@ -10,19 +10,17 @@ on:
   workflow_dispatch:
 
 jobs:
-    
-  lint: #PYLINT
+  lint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
@@ -30,6 +28,33 @@ jobs:
           pip install -r requirements.txt
           pip install pylint
 
-      - name: Run pylint
+      - name: Run pylint and save score
+        id: pylint
         run: |
-          pylint --fail-under=8 $(git ls-files '*.py')
+          pylint **/*.py --fail-under=8 > pylint-report.txt || true
+          score=$(grep -oP '(?<=Your code has been rated at )[^/]*' pylint-report.txt)
+          echo "PYLINT_SCORE=$score" >> $GITHUB_ENV
+
+      - name: Generate badge
+        run: |
+          mkdir -p .github/badges
+          score=${{ env.PYLINT_SCORE }}
+          color="green"
+          if (( $(echo "$score < 8" | bc -l) )); then
+            color="yellow"
+          fi
+          if (( $(echo "$score < 5" | bc -l) )); then
+            color="red"
+          fi
+          echo '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="20" role="img" aria-label="Pylint Score"><linearGradient id="a" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><rect rx="3" width="120" height="20" fill="#555"/><rect rx="3" x="60" width="60" height="20" fill="'$color'"/><path fill="'$color'" d="M60 0h4v20h-4z"/><rect rx="3" width="120" height="20" fill="url(#a)"/><g fill="#fff" text-anchor="middle" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11"><text x="30" y="15" fill="#010101" fill-opacity=".3">Pylint Score</text><text x="30" y="14">Pylint Score</text><text x="90" y="15" fill="#010101" fill-opacity=".3">'$score'/10</text><text x="90" y="14">'$score'/10</text></g></svg>' > .github/badges/pylint.svg
+
+      - name: List generated files for debugging
+        run: ls -R .github/badges
+
+      - name: Commit badge
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .github/badges/pylint.svg
+          git commit -m "Update pylint badge" || echo "No changes to commit"
+          git push || echo "No changes to push"
