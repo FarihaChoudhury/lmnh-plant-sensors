@@ -1,4 +1,7 @@
 # Liverpool Natural History Museum: Plant Health Monitoring System
+![Pylint Score](.github/badges/pylint.svg)  
+![Pytest Score](.github/badges/test.svg)
+
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -39,7 +42,11 @@ Prerequisites:
    git clone https://github.com/SurinaCS/Coursework-Data-Engineering-Week-5.git
    ```
 2. Navigate into the cloned repository.
-3. Install all required dependencies:
+3. Install `feedtds`:
+   ```sh
+   brew install freetds
+   ```
+4. Install all required dependencies:
    ```sh
    pip install -r requirements.txt
    ```
@@ -53,7 +60,6 @@ You must have a `.env` file containing:
    
 ## Folders Explained
 These folders are found this repository:     
-<<<<<<< HEAD
 - **[archive](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/archive)**     
    This folder contains the necessary files to move the data extracted from the previous 24hrs to the S3 bucket where 'archived' data is stored.
 - **[dashboard](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/dashboard)**
