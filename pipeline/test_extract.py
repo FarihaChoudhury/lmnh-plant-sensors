@@ -2,7 +2,6 @@
 #  pylint: skip-file
 
 import pytest
-import asyncio
 from unittest.mock import patch, mock_open, AsyncMock
 
 from extract import (extract_botanist_information,
