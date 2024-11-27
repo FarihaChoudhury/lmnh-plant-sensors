@@ -5,6 +5,7 @@ import asyncio
 import ssl
 import aiohttp
 import certifi
+import pandas as pd
 
 logging.basicConfig(
     level=logging.INFO,
@@ -100,9 +101,9 @@ async def fetch_and_collect_data() -> list[dict]:
         return [result for result in results if result is not None]
 
 
-def main() -> list[dict]:
+def main() -> pd.DataFrame:
     """ Extracts the plant insights from the API and returns the necessary data as a list of dictionaries."""
-    return asyncio.run(fetch_and_collect_data())
+    return pd.DataFrame(asyncio.run(fetch_and_collect_data()))
 
 
 if __name__ == "__main__":
