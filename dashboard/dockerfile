@@ -4,8 +4,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 COPY streamlit.py .
-
-RUN mkdir dashboard/
+COPY queries.py .
 
 EXPOSE 8501
 CMD ["streamlit", "run", "streamlit.py", , "--server.port=8501"]
