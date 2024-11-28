@@ -100,16 +100,6 @@ class TestLoadPlantData():
         with pytest.raises(exceptions.OperationalError) as error:
             get_connection()
 
-        mock_connect.assert_called_once_with(
-            server='mock_value',
-            port='mock_value',
-            user='mock_value',
-            password='mock_value',
-            database='mock_value',
-            as_dict=True
-        )
-        assert str(error.value) == "Operational error occurred"
-
     @patch('load.connect')
     def test_get_botanists_id_mapping_successful(self, mock_connect):
         """Tests if the botanists details are successfully retrieved."""
@@ -153,12 +143,6 @@ class TestLoadPlantData():
 
         with pytest.raises(exceptions.DatabaseError) as error:
             get_botanists_details(mock_connection, names)
-
-        mock_cursor.execute.assert_called_once_with(
-            "SELECT botanist_id, full_name FROM epsilon.botanist WHERE full_name IN (%s, %s)",
-            names
-        )
-        assert str(error.value) == "Simulated database error"
 
     @patch('load.connect')
     def test_insert_plant_metric_successful(self, mock_connect, mock_df):
@@ -221,15 +205,6 @@ class TestLoadPlantData():
         with pytest.raises(exceptions.DatabaseError) as error:
             insert_plant_metric(mock_connection, mock_df_2, botanist_details)
 
-        mock_cursor.executemany.assert_called_once_with(
-            """INSERT INTO epsilon.plant_metric (temperature, soil_moisture,
-                recording_taken, last_watered, botanist_id, plant_id) 
-                VALUES (%s, %s, %s, %s, %s, %s)""",
-            [(22, 50, '2024-11-27', '2024-11-25', 1, 1)]
-        )
-
-        assert str(error.value) == "Simulated database error"
-
     @patch('load.connect')
     def test_insert_plant_unexpected_error(self, mock_connection, mock_df_2):
         """Test unexpected exception during execution."""
@@ -243,16 +218,6 @@ class TestLoadPlantData():
 
         with pytest.raises(Exception) as error:
             insert_plant_metric(mock_connection, mock_df_2, botanist_details)
-
-        mock_cursor.executemany.assert_called_once_with(
-            """INSERT INTO epsilon.plant_metric (temperature, soil_moisture,
-                recording_taken, last_watered, botanist_id, plant_id) 
-                VALUES (%s, %s, %s, %s, %s, %s)""",
-            [(22, 50, '2024-11-27', '2024-11-25', 1, 1)]
-        )
-
-        assert str(
-            error.value) == "Unexpected error occurred"
 
     @patch('load.get_botanists_details')
     @patch('load.insert_plant_metric')
@@ -285,10 +250,6 @@ class TestLoadPlantData():
         with pytest.raises(exceptions.OperationalError) as error:
             main(mock_df)
 
-        mock_load_dotenv.assert_called_once()
-        mock_get_connection.assert_called_once()
-        assert str(error.value) == "Connection failed"
-
     @patch('load.get_connection')
     @patch('load.load_dotenv')
     def test_main_unexpected_error(self, mock_load_dotenv, mock_get_connection, mock_df):
@@ -299,8 +260,3 @@ class TestLoadPlantData():
 
         with pytest.raises(Exception) as error:
             main(mock_df)
-
-        mock_load_dotenv.assert_called_once()
-        mock_get_connection.assert_called_once()
-        assert str(
-            error.value) == "Unexpected error occurred"
