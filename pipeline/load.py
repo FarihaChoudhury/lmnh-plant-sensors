@@ -44,12 +44,10 @@ def get_botanists_details(connection: Connection, names: list) -> dict:
             result = cur.fetchall()
             if not result:
                 logging.warning("No botanists found for the provided names.")
+                return None
             return {botanist['full_name']: botanist['botanist_id'] for botanist in result}
     except exceptions.DatabaseError as e:
         logging.error("Database error while fetching botanist IDs: %s", e)
-        raise
-    except Exception as e:
-        logging.error("Unexpected error while fetching botanist IDs: %s", e)
         raise
 
 
@@ -93,18 +91,19 @@ def main(plant_metrics_df: pd.DataFrame):
     load_dotenv()
 
     try:
-
         with get_connection() as conn:
             botanist_names = plant_metrics_df['name'].unique().tolist()
 
             botanist_id_mapping = get_botanists_details(
                 conn, botanist_names)
 
-            insert_plant_metric(
-                conn, plant_metrics_df, botanist_id_mapping)
+            if botanist_id_mapping:
+                insert_plant_metric(
+                    conn, plant_metrics_df, botanist_id_mapping)
     except exceptions.OperationalError as e:
         logging.error("Failed to connect to the database: %s", e)
         raise
     except Exception as e:
         logging.error(
             "An error occurred during the execution of the program: %s", e)
+        raise

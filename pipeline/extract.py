@@ -89,7 +89,7 @@ async def fetch_plant_data(session: aiohttp.ClientSession, number: int) -> dict:
         return None
 
 
-async def fetch_and_collect_data() -> list[dict]:
+async def collect_all_plant_data() -> list[dict]:
     """Fetches data concurrently for all plants and returns it as a list of dictionaries"""
     ssl_context = ssl.create_default_context(cafile=certifi.where())
 
@@ -103,11 +103,7 @@ async def fetch_and_collect_data() -> list[dict]:
 
 def main() -> pd.DataFrame:
     """ Extracts the plant insights from the API and returns the necessary data as a list of dictionaries."""
-    return pd.DataFrame(asyncio.run(fetch_and_collect_data()))
-
-
-def main() -> list[dict]:
-    collected_data = asyncio.run(fetch_and_collect_data())
+    return pd.DataFrame(asyncio.run(collect_all_plant_data()))
 
 
 if __name__ == "__main__":
