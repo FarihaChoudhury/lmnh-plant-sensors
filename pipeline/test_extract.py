@@ -1,5 +1,5 @@
-"""Tests for extract.py"""
-#  pylint: skip-file
+"""Test file for extracting plant data"""
+# pylint: skip-file
 
 import pytest
 from unittest.mock import patch, mock_open, AsyncMock
@@ -15,6 +15,8 @@ from extract import (extract_botanist_information,
 
 
 class TestExtractPlantInformation():
+    """ Test class containing extract tests """
+
     @pytest.fixture
     def sample_api_information(self):
         return {

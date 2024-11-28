@@ -1,4 +1,4 @@
-"""Tests for load.py"""
+"""Test file for loading plant data to database"""
 # pylint: skip-file
 
 import os
@@ -12,6 +12,7 @@ from load import get_connection, get_botanists_details, insert_plant_metric, mai
 
 
 class TestLoadPlantData():
+    """ Test class containing load tests """
 
     @pytest.fixture
     def mock_df(self):

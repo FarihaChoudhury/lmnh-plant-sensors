@@ -1,8 +1,7 @@
-"""Tests for the archive.py script"""
+""" Test file for archive plant data"""
 # pylint: skip-file
 
 import os
-
 import unittest
 from unittest.mock import MagicMock, patch, call
 from pymssql import exceptions
@@ -19,6 +18,7 @@ from archive import (
 
 
 class TestArchive(unittest.TestCase):
+    """ Test class containing archive tests """
     @patch.dict(
         os.environ,
         {
@@ -135,8 +135,9 @@ class TestArchive(unittest.TestCase):
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
         clear_plant_metrics(mock_conn)
 
-        mock_cursor.execute.assert_called_once_with(
-            "TRUNCATE TABLE epsilon.plant_metric;")
+        expected_query = "TRUNCATE TABLE epsilon.plant_metric;"
+
+        mock_cursor.execute.assert_called_once_with(expected_query)
 
     @patch("archive.get_connection")
     @patch("archive.get_all_plant_ids")
@@ -178,11 +179,9 @@ class TestArchive(unittest.TestCase):
         mock_cursor.execute.assert_called_once_with(
             """INSERT INTO epsilon.plants_archive (avg_temperature, 
                     avg_soil_moisture, watered_count, last_recorded, plant_id)
-                VALUES (%s, %s, %s, %s, %s);""",
-            (25.3, 70.5, 3, "2024-11-27 15:00:00", 101)
-        )
+                VALUES (%s, %s, %s, %s, %s);""", (25.3, 70.5, 3, "2024-11-27 15:00:00", 101))
 
-    @patch("archive.get_connection")
+    @ patch("archive.get_connection")
     def test_calculate_archive_metrics(self, mock_get_connection):
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
@@ -191,16 +190,17 @@ class TestArchive(unittest.TestCase):
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
         mock_get_connection.return_value = mock_conn
 
-        calculate_archive_metrics(mock_conn, 1)
-        mock_cursor.execute.assert_called_once_with(
-            """SELECT
+        expected_query = """SELECT
                     AVG(soil_moisture) as avg_moisture,
                     COUNT(DISTINCT(last_watered)) as watered_count,
                     AVG(temperature) as avg_temp
                 FROM plant_metric
-                WHERE plant_id = %s""", (1,))
+                WHERE plant_id = %s"""
 
-    @patch("archive.get_connection")
+        calculate_archive_metrics(mock_conn, 1)
+        mock_cursor.execute.assert_called_once_with(expected_query, (1,))
+
+    @ patch("archive.get_connection")
     def test_get_latest_recording(self, mock_get_connection):
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
@@ -209,9 +209,10 @@ class TestArchive(unittest.TestCase):
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
         mock_get_connection.return_value = mock_conn
 
-        get_latest_recording(mock_conn, 1)
-        mock_cursor.execute.assert_called_once_with(
-            """SELECT TOP 1 recording_taken
+        expected_query = """SELECT TOP 1 recording_taken
                 FROM plant_metric
                 WHERE plant_id = %s
-                ORDER BY recording_taken DESC;""", (1,))
+                ORDER BY recording_taken DESC;"""
+
+        get_latest_recording(mock_conn, 1)
+        mock_cursor.execute.assert_called_once_with(expected_query, (1,))

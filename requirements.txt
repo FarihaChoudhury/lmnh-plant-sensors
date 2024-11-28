@@ -9,3 +9,5 @@ certifi
 asyncio
 pytest-asyncio
 pylint
+streamlit
+altair

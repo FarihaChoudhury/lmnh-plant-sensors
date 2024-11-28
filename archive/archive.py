@@ -1,4 +1,6 @@
 """Archives data from the past 24 hours and cleans the plant metric table"""
+# pylint: disable = no-name-in-module
+# pylint: disable=broad-exception-caught
 
 from os import environ
 import logging
@@ -31,7 +33,7 @@ def get_connection() -> Connection:
         raise
     except Exception as e:
         logging.error(
-            "Ucoverage report -mnexpected error while connecting to database: %s", e)
+            "Unexpected error while connecting to database: %s", e)
         raise
 
 
