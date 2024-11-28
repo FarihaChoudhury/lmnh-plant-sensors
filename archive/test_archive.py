@@ -1,6 +1,4 @@
-from archive import (get_connection, get_all_plant_ids,
-                     get_plants_data, upload_plant_metric_data, calculate_archive_metrics, get_latest_recording, clear_plant_metrics)
-
+import os
 
 import unittest
 from unittest.mock import MagicMock, patch, call
@@ -16,25 +14,34 @@ from archive import (
 )
 
 
-class TestPlantETL(unittest.TestCase):
+class TestArchive(unittest.TestCase):
+    @patch.dict(
+        os.environ,
+        {
+            "DB_HOST": "mock_value",
+            "DB_NAME": "mock_value",
+            "DB_USER": "mock_value",
+            "DB_PASSWORD": "mock_value",
+            "DB_PORT": "mock_value",
+            "SERVER": "mock_value"
+        },
+    )
+    @patch('archive.connect')
+    def test_get_connection_success(self, mock_connect):
+        """Test successful database connection."""
+        mock_connection = MagicMock()
+        mock_connect.return_value = mock_connection
 
-    @patch("archive.connect")
-    @patch("archive.environ")
-    def test_get_connection_success(self, mock_environ, mock_connect):
-        mock_environ.__getitem__.side_effect = lambda key: {
-            "DB_HOST": "localhost",
-            "DB_PORT": "1433",
-            "DB_USER": "user",
-            "DB_PASSWORD": "password",
-            "DB_NAME": "database"
-        }[key]
-
-        mock_conn = MagicMock()
-        mock_connect.return_value = mock_conn
-
-        conn = get_connection()
-        self.assertEqual(conn, mock_conn)
-        mock_connect.assert_called_once()
+        connection = get_connection()
+        mock_connect.assert_called_once_with(
+            server='mock_value',
+            port='mock_value',
+            user='mock_value',
+            password='mock_value',
+            database='mock_value',
+            as_dict=True
+        )
+        assert connection == mock_connect.return_value
 
     @patch("archive.connect")
     def test_get_connection_missing_env_var(self, mock_connect):
