@@ -1,4 +1,4 @@
-"""Archives data from the past 24 hours and cleans the plant metric ta"""
+"""Archives data from the past 24 hours and cleans the plant metric table"""
 
 from os import environ
 import logging
