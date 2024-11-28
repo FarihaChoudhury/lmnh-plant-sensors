@@ -1,5 +1,5 @@
 """Test file: transform.py"""
-# pylint: disable=line-too-long
+# pylint: skip-file
 
 from io import StringIO
 import pytest

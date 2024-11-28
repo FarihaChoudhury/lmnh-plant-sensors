@@ -1,3 +1,6 @@
+"""Tests for load.py"""
+# pylint: skip-file
+
 import os
 import pytest
 import pandas as pd
