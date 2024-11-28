@@ -1,4 +1,5 @@
 """Test file for loading plant data to database"""
+# pylint: skip-file
 import os
 import pytest
 import pandas as pd

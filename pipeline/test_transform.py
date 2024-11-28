@@ -1,5 +1,6 @@
 """Test file for transforming plant data"""
 # pylint: disable=line-too-long
+# pylint: skip-file
 
 from io import StringIO
 import pytest
