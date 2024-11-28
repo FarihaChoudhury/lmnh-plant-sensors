@@ -1,11 +1,10 @@
-
 """db_queries.py: data retrieval for dashboard visualisations."""
 # pylint: disable = no-name-in-module
 
 from os import environ
 import logging
 import pandas as pd
-from pymssql import connect, Connection, exceptions, Cursor
+from pymssql import connect, Connection, exceptions, Cursor, exceptions
 
 def get_connection() -> Connection:
     """Connects to Microsoft SQL Server Database"""
@@ -78,7 +77,16 @@ def get_archival_data(cursor: Cursor) -> pd.DataFrame:
         JOIN {environ['SCHEMA_NAME']}.plant as p
             ON pa.plant_id = p.plant_id;
         """
-    cursor.execute(query)
-    result = cursor.fetchall()
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+    except exceptions.OperationalError as e:
+        logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
+        raise
+    except Exception as e:
+        logging.error("Error occurred whilst fetching live metrics: %s", e)
+
+
 
     return pd.DataFrame(result)
+
