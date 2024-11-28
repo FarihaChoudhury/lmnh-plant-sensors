@@ -1,4 +1,4 @@
-"""queries.py: data retrieval for dashboard visualisations."""
+"""db_queries.py: data retrieval for dashboard visualisations."""
 # pylint: disable = no-name-in-module
 
 from os import environ
