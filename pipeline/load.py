@@ -1,3 +1,5 @@
+# pylint: disable = no-name-in-module
+
 from os import environ
 import logging
 from dotenv import load_dotenv
