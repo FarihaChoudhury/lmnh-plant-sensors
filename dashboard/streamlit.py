@@ -45,8 +45,18 @@ def get_cursor(connection: Connection) -> Cursor:
 
 def homepage() -> None:
     """Homepage showing visualizations for LNMH."""
-    st.set_page_config(layout="wide")
-    st.title("🌱LNMH Plant Monitoring System🌱")
+    st.set_page_config(page_title="LNHM Plant Metrics",
+                       page_icon="seedling", layout="wide")
+    emoji_left, title, emoji_right = st.columns((1, 2, 1))
+    with emoji_left:
+        st.title("🌱🌵🍄")
+    with title:
+        st.markdown(
+            "<h1 style='text-align: center;'>LNMH Plant Monitoring System</h1>", unsafe_allow_html=True)
+
+    with emoji_right:
+        st.markdown("<h1 style='text-align: right;'>🍄🌵🌱</h1>",
+                    unsafe_allow_html=True)
 
     # Fetch data
     connection = get_connection()
@@ -83,8 +93,8 @@ def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame) -> None
         )
     st.write(" ")
 
-    st.altair_chart(overlay_temperature_chart(data_live,
-                                              data_archival))
+    st.altair_chart(overlay_soil_moisture_chart(data_live,
+                                                data_archival))
 
     st.altair_chart(plot_last_watered(data_live))
 
@@ -177,13 +187,7 @@ def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
         ),
         tooltip=[alt.Tooltip("soil_moisture:Q", title="Soil Moisture"),
                  alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
-    ).configure_axis(
-        labelFontSize=12,
-        titleFontSize=14
-    ).configure_title(
-        fontSize=16
-    ).interactive()
-
+    )
     return chart
 
 
@@ -313,7 +317,7 @@ def overlay_soil_moisture_chart(data_live: pd.DataFrame, data_archival: pd.DataF
         x='shared'
     ).properties(
         height=400,
-        title="Live Plant Temperature with Average"
+        title="Live Plant Soil Moisture Levels with Average"
     ).configure_axis(
         labelFontSize=12,
         titleFontSize=14
