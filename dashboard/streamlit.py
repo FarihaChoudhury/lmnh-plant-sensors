@@ -191,7 +191,7 @@ def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
     return chart
 
 
-def get_data_plant_table(data: dict) -> None:
+def get_data_plant_table(data: dict) -> pd.DataFrame:
     """Display a table with plant IDs and names in Streamlit."""
     df = pd.DataFrame({
         'plant_id': data['plant_id'],
