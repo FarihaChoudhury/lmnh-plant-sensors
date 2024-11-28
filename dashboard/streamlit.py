@@ -14,36 +14,6 @@ from db_queries import (get_archival_data, get_latest_metrics,
 COLOUR_PALETTE = ["#84b067", "#a7de83", "#4b633b", "#2c3b23"]
 
 
-def get_connection() -> Connection:
-    """Connects to Microsoft SQL Server Database"""
-    logging.info("Attempting to connect to the database.")
-    try:
-        conn = connect(
-            server=environ["DB_HOST"],
-            port=environ["DB_PORT"],
-            user=environ["DB_USER"],
-            password=environ["DB_PASSWORD"],
-            database=environ["DB_NAME"],
-            as_dict=True
-        )
-        logging.info("Database connection successful.")
-        return conn
-    except KeyError as e:
-        logging.error("%s missing from environment variables.", e)
-        raise
-    except exceptions.OperationalError as e:
-        logging.error("Error connecting to database: %s", e)
-        raise
-    except Exception as e:
-        logging.error("Unexpected error while connecting to database: %s", e)
-        raise
-
-
-def get_cursor(connection: Connection) -> Cursor:
-    """Cursor to execute commands in db"""
-    return connection.cursor()
-
-
 def homepage() -> None:
     """Homepage showing visualizations for LNMH."""
 
