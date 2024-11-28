@@ -45,27 +45,33 @@ def get_cursor(connection: Connection) -> Cursor:
 
 def homepage() -> None:
     """Homepage showing visualizations for LNMH."""
+    st.set_page_config(layout="wide")
     st.title("LNMH Plant Monitoring System")
+
+    # Fetch data
     connection = get_connection()
     cursor = get_cursor(connection)
     live_metrics = get_latest_metrics(cursor)
 
-    plant_names = list(live_metrics['plant_name'])
-    filter_plant = get_plant_filter(plant_names)
-    filtered_data = filter_by_plant(
-        filter_plant, live_metrics)
+    # Add filter
+    filter_plant = get_plant_filter(list(live_metrics['plant_name']))
 
+    # Filter data
+    filtered_data = filter_by_plant(filter_plant, live_metrics)
+    # st.write(filtered_data)
+
+    # Display charts and tables
     display_charts(filtered_data)
 
-    # st.altair_chart(plot_live_temp(filtered_data['plant_temp']))
-    # st.altair_chart(plot_live_moisture(filtered_data['moisture']))
+    st.write(get_archival_data(cursor))
 
 
 def display_charts(data: dict) -> None:
-    temp, x = st.columns((2, 1))
+
+    temp, name_id = st.columns((6, 1))
     with temp:
-        st.altair_chart(plot_live_temp(data['metrics']))
-    with x:
+        st.altair_chart(plot_live_temp(data))
+    with name_id:
         table_data = get_data_plant_table(data)
         st.write(
             table_data.style.set_table_styles([
@@ -78,27 +84,28 @@ def display_charts(data: dict) -> None:
 
     moisture, y = st.columns((2, 1))
     with moisture:
-        st.altair_chart(plot_live_moisture(data['metrics']))
+        st.altair_chart(plot_live_moisture(data))
     with y:
         st.write(' nnnoooooo ')
 
-
-def get_plant_filter(plant_names: list) -> str:
-    """Create a filter based on plant name."""
-    return st.sidebar.selectbox(
-        'Filter by Plant',
-        ['All Plants'] + plant_names)
+    st.altair_chart(plot_last_watered(data))
 
 
-def filter_by_plant(filter: str, plant_metrics: pd.DataFrame) -> dict:
-    """Filter visualisations based off plant name."""
+def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
+    """Create a multiselect filter based on plant names."""
+    return st.multiselect(
+        'Filter by Plant(s)',
+        options=plant_names,
+        default=plant_names,
+        key=key
+    )
 
-    if filter != 'All Plants':
-        return {
-            'metrics': plant_metrics[plant_metrics['plant_name'] == filter]
-        }
-    return {
-        'metrics': plant_metrics}
+
+def filter_by_plant(selected_plants: list, plant_metrics: pd.DataFrame):
+    """Filter visualizations based on selected plant names."""
+    if selected_plants:
+        return plant_metrics[plant_metrics['plant_name'].isin(selected_plants)]
+    return plant_metrics
 
 
 def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
@@ -127,7 +134,7 @@ def plot_live_temp(data: pd.DataFrame) -> AltairChart:
     data['plant_id_name'] = data['plant_name'] + \
         ' (ID: ' + data['plant_id'].astype(str) + ')'
 
-    chart = alt.Chart(data, title="Live Plant Temperature").mark_bar().encode(
+    chart = alt.Chart(data, title="Live Plant Temperature").mark_bar(width=10).encode(
         x=alt.X(
             "plant_id:N",
             title="Plant ID"),
@@ -136,6 +143,7 @@ def plot_live_temp(data: pd.DataFrame) -> AltairChart:
             title="Temperature (°C)"),
         color=alt.Color(
             "temperature:Q",
+            title="Temperature (°C)",
             scale=alt.Scale(
                 range=COLOUR_PALETTE,
                 domain=[data["temperature"].min(), data["temperature"].max()]
@@ -147,8 +155,7 @@ def plot_live_temp(data: pd.DataFrame) -> AltairChart:
         labelFontSize=12,
         titleFontSize=14
     ).configure_title(
-        fontSize=16
-    ).interactive()
+        fontSize=16).interactive()
 
     return chart
 
@@ -158,7 +165,7 @@ def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
     data['plant_id_name'] = data['plant_name'] + \
         ' (ID: ' + data['plant_id'].astype(str) + ')'
 
-    chart = alt.Chart(data, title="Live Plant Soil Moisture Levels").mark_bar().encode(
+    chart = alt.Chart(data, title="Live Plant Soil Moisture Levels").mark_bar(width=10).encode(
         x=alt.X(
             "plant_id:N",
             title="Plant ID"),
@@ -167,12 +174,13 @@ def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
             title="Soil Moisture"),
         color=alt.Color(
             "soil_moisture:Q",
+            title="Soil Moisture Levels",
             scale=alt.Scale(
                 range=COLOUR_PALETTE,
                 domain=[data["soil_moisture"].min(), data["soil_moisture"].max()]
             )
         ),
-        tooltip=[alt.Tooltip("soil_moisture:Q", title="Soil Moisture (°C)"),
+        tooltip=[alt.Tooltip("soil_moisture:Q", title="Soil Moisture"),
                  alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
     ).configure_axis(
         labelFontSize=12,
@@ -184,22 +192,11 @@ def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
     return chart
 
 
-# fix this (doesnt work)
-def create_df_plant_id_name(data: pd.DataFrame) -> pd.DataFrame:
-    """Create the data frame for the legend showing plant id and name."""
-
-    return data[['plant_name', 'plant_id']].rename(columns={
-        'plant_id': 'Plant ID',
-        'plant_name': 'Plant Name'
-    }).set_index('Plant ID').sort_index().style.set_table_styles([{'selector': 'col0', 'props': [('width', '100px')]},
-                                                                 {'selector': 'col1', 'props': [('width', '200px')]}])
-
-
 def get_data_plant_table(data: dict) -> None:
     """Display a table with plant IDs and names in Streamlit."""
     df = pd.DataFrame({
-        'plant_id': data['metrics']['plant_id'],
-        'plant_name': data['metrics']['plant_name']
+        'plant_id': data['plant_id'],
+        'plant_name': data['plant_name']
     })
 
     # Rename columns, set index, and sort
@@ -209,6 +206,57 @@ def get_data_plant_table(data: dict) -> None:
     }).set_index('Plant ID').sort_index()
 
     return table_data
+
+
+def plot_last_watered(data: pd.DataFrame) -> AltairChart:
+    """Function to create a plot showing when each plant was last watered."""
+    data['plant_id_name'] = data['plant_name'] + \
+        ' (ID: ' + data['plant_id'].astype(str) + ')'
+    chart = alt.Chart(data, title="Last Watered").mark_point().encode(
+        x=alt.X(
+            "plant_id:N",
+            title="Plant ID"),
+        y=alt.Y(
+            "last_watered:T",
+            title="Last Watered At"),
+        color=alt.Color(
+            "last_watered:T",
+            legend=None,
+            scale=alt.Scale(
+                range=COLOUR_PALETTE,
+                domain=[data["last_watered"].min(
+                ), data["last_watered"].max()]
+            )
+        ),
+        tooltip=[alt.Tooltip("last_watered:T", title="Last Watered At"),
+                 alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
+    ).configure_axis(
+        labelFontSize=12,
+        titleFontSize=14
+    ).configure_title(
+        fontSize=16
+    ).interactive()
+
+    return chart
+
+
+def get_archival_data(cursor: Cursor) -> pd.DataFrame:
+    """Function gets archival data including averages of temperature, soil_moisture."""
+    query = f"""
+        SELECT pa.avg_temperature, pa.avg_soil_moisture, p.plant_name
+        FROM {environ['SCHEMA_NAME']}.Plants_archive as pa
+         JOIN (SELECT plant_id,
+            MAX(last_recorded) as latest_time
+            FROM {environ['SCHEMA_NAME']}.Plants_archive
+            GROUP BY plant_id) as last_recording
+        ON pa.plant_id = last_recording.plant_id
+        JOIN {environ['SCHEMA_NAME']}.plant as p
+            ON pa.plant_id = p.plant_id;
+        """
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    return pd.DataFrame(result)
 
 
 if __name__ == "__main__":
