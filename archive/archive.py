@@ -31,7 +31,7 @@ def get_connection() -> Connection:
         raise
     except Exception as e:
         logging.error(
-            "Ucoverage report -mnexpected error while connecting to database: %s", e)
+            "Unexpected error while connecting to database: %s", e)
         raise
 
 
