@@ -1,3 +1,6 @@
+"""Tests for the archive.py script"""
+# pylint: skip-file
+
 import os
 
 import unittest
