@@ -30,11 +30,12 @@ def get_connection() -> Connection:
         logging.error("Error connecting to database: %s", e)
         raise
     except Exception as e:
-        logging.error("Unexpected error while connecting to database: %s", e)
+        logging.error(
+            "Ucoverage report -mnexpected error while connecting to database: %s", e)
         raise
 
 
-def get_all_plant_ids(conn: Connection):
+def get_all_plant_ids(conn: Connection) -> list:
     """Retrieves all plant ids from the database"""
     query = "SELECT plant_id FROM plant;"
     with conn.cursor() as cur:
@@ -45,7 +46,7 @@ def get_all_plant_ids(conn: Connection):
     return ids
 
 
-def get_plants_data(conn: Connection, plant_ids):
+def get_plants_data(conn: Connection, plant_ids) -> None:
     """Combines the plant ids and plant metrics"""
     for id in plant_ids:
         metrics = calculate_archive_metrics(conn, id)[0]
@@ -55,7 +56,7 @@ def get_plants_data(conn: Connection, plant_ids):
         upload_plant_metric_data(conn, metrics)
 
 
-def upload_plant_metric_data(conn: Connection, plant_details: dict):
+def upload_plant_metric_data(conn: Connection, plant_details: dict) -> None:
     """Uploads the past 24 hour data from plant metrics table into archive table"""
 
     logging.info("Attempting to insert into archive table")
@@ -108,7 +109,7 @@ def get_latest_recording(conn: Connection, plant_id: int) -> int:
 
 def clear_plant_metrics(conn: Connection) -> None:
     """ Clears all recordings from the plant metrics table."""
-    query = "TRUNCATE TABLE epsiplant_metric;"
+    query = "TRUNCATE TABLE epsilon.plant_metric;"
     with conn.cursor() as cur:
         cur.execute(query)
 
@@ -136,7 +137,3 @@ def lambda_handler(event, context) -> None:
             "statusCode": 500,
             "body": f"An unexpected error occurred: {e}"
         }
-
-
-if __name__ == "__main__":
-    lambda_handler(None, None)
