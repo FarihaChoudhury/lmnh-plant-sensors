@@ -1,3 +1,4 @@
+
 """db_queries.py: data retrieval for dashboard visualisations."""
 # pylint: disable = no-name-in-module
 
@@ -5,7 +6,6 @@ from os import environ
 import logging
 import pandas as pd
 from pymssql import connect, Connection, exceptions, Cursor
-
 
 def get_connection() -> Connection:
     """Connects to Microsoft SQL Server Database"""
