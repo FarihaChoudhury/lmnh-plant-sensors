@@ -16,6 +16,7 @@ from archive import (
 
 
 class TestArchive(unittest.TestCase):
+    """ Test class containing archive tests """
     @patch.dict(
         os.environ,
         {
