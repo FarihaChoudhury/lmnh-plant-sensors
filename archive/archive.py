@@ -1,5 +1,6 @@
 """Archives data from the past 24 hours and cleans the plant metric table"""
 # pylint: disable = no-name-in-module
+# pylint: disable=broad-exception-caught
 
 from os import environ
 import logging
