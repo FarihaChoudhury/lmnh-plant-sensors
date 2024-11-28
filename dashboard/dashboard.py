@@ -1,12 +1,9 @@
 """Streamlit Dashboard for LNMH Plant Monitoring System."""
 
-from os import environ
-import logging
 from dotenv import load_dotenv
 import pandas as pd
 import streamlit as st
 import altair as alt
-from pymssql import connect, Connection, exceptions, Cursor
 
 from db_queries import (get_archival_data, get_latest_metrics,
                         get_connection, get_cursor)
@@ -24,7 +21,8 @@ def homepage() -> None:
         st.title("🌱🌵🍄")
     with title:
         st.markdown(
-            "<h1 style='text-align: center;'>LNMH Plant Monitoring System</h1>", unsafe_allow_html=True)
+            "<h1 style='text-align: center;'>LNMH Plant Monitoring System</h1>",
+            unsafe_allow_html=True)
 
     with emoji_right:
         st.markdown("<h1 style='text-align: right;'>🍄🌵🌱</h1>",
@@ -77,7 +75,8 @@ def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
     )
 
 
-def filter_by_plant(selected_plants: list, plant_metrics: pd.DataFrame, archive_plants: pd.DataFrame) -> list:
+def filter_by_plant(selected_plants: list, plant_metrics: pd.DataFrame,
+                    archive_plants: pd.DataFrame) -> list:
     """Filter visualizations based on selected plant names."""
     if selected_plants:
         return [plant_metrics[plant_metrics['plant_name'].isin(selected_plants)],
