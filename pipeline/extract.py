@@ -42,13 +42,14 @@ async def extract_plant_information(plant_info: dict) -> dict:
         scientific_name = "None"
 
     if images is not None:
-        images = images['original_url']
+        images = images['small_url']
     else:
         images = "None"
 
     return {"plant_id": plant_info.get('plant_id'),
             "name": plant_info.get('name'),
-            "scientific_name": scientific_name}
+            "scientific_name": scientific_name,
+            "image_url": images}
 
 
 async def extract_metric_information(metric_info: dict) -> dict:
@@ -77,9 +78,12 @@ async def fetch_plant_data(session: aiohttp.ClientSession, number: int) -> dict:
                     "plant_id": plant['plant_id'],
                     "plant_name": plant["name"],
                     "plant_scientific_name": plant["scientific_name"],
+                    "plant_image_url": plant["image_url"],
                     **plant_metric
                 }
                 logging.info("Processed plant ID: %s", number)
+                logging.info("Plant image url is: %s",
+                             combined_data["plant_image_url"])
                 return combined_data
             logging.error(
                 "Failed with status code: %s, plant ID: %s", response.status, number)
