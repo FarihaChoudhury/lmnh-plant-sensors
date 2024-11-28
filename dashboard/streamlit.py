@@ -8,11 +8,10 @@ import streamlit as st
 import altair as alt
 from pymssql import connect, Connection, exceptions, Cursor
 
-from queries import (get_archival_data, get_latest_metrics)
+from db_queries import (get_archival_data, get_latest_metrics,
+                        get_connection, get_cursor)
 
 COLOUR_PALETTE = ["#84b067", "#a7de83", "#4b633b", "#2c3b23"]
-
-AltairChart = alt.Chart
 
 
 def get_connection() -> Connection:
@@ -123,7 +122,7 @@ def link_plant_name_id(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def plot_live_temp(data: pd.DataFrame) -> AltairChart:
+def plot_live_temp(data: pd.DataFrame) -> alt.Chart:
     """Function to create a chart to show current temperature for each plant ID."""
 
     data = link_plant_name_id(data)
@@ -150,7 +149,7 @@ def plot_live_temp(data: pd.DataFrame) -> AltairChart:
     return chart
 
 
-def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
+def plot_live_moisture(data: pd.DataFrame) -> alt.Chart:
     """Function to create a plot for the live soil moisture levels of each plant."""
     data = link_plant_name_id(data)
 
@@ -189,7 +188,7 @@ def get_data_plant_table(data: dict) -> pd.DataFrame:
     }).set_index('Plant ID').sort_index()
 
 
-def plot_last_watered(data: pd.DataFrame) -> AltairChart:
+def plot_last_watered(data: pd.DataFrame) -> alt.Chart:
     """Function to create a plot showing when each plant was last watered."""
     data = link_plant_name_id(data)
     chart = alt.Chart(data, title="Last Watered").mark_point().encode(
