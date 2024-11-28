@@ -50,7 +50,7 @@ pip3 install -r requirements.txt
 - `test_load.py` - this test file verifies the core functions in `load.py` through unit tests.
 
 
-## Secrets Management 🕵️‍♂️
+## Secrets Management 🕵🏽‍♂️
 Before running the script, you need to set up your AWS credentials. Create a new file called `.env` in the `pipeline` directory and add the following lines, with your actual AWS keys and database details:
 
 | Variable         | Description                                      |

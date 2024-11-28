@@ -142,7 +142,7 @@ These files are found in this repository:
 [Python-url]: https://www.python.org/
 
 
-## Developers 👨‍💻👩‍💻
+## Developers 👨🏽‍💻👩🏽‍💻
 This project was developed by the following contributors:
 
 - **[Surina Santhokhy](https://github.com/SurinaCS)** - Project Manager & Data Engineer

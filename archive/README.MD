@@ -40,7 +40,7 @@ pip3 install -r requirements.txt
     - Logs the status of operations to facilitate debugging.
     - Contains a lambda_handler function for AWS Lambda integration.
 
-## Secrets Management 🕵️‍♂️
+## Secrets Management 🕵🏽‍♂️
 
 ‼️ **Same `.env` file and secrets as pipeline** ‼️
 
