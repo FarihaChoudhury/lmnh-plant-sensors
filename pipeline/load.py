@@ -33,7 +33,7 @@ def get_connection() -> Connection:
         raise
 
 
-def get_botanists_id_mapping(connection: Connection, names: list) -> dict:
+def get_botanists_details(connection: Connection, names: list) -> dict:
     """Fetches botanist IDs for a list of names."""
     logging.info("Fetching botanist IDs for names: %s", names)
     query = f"""SELECT botanist_id, full_name FROM epsilon.botanist WHERE full_name IN ({
@@ -53,21 +53,7 @@ def get_botanists_id_mapping(connection: Connection, names: list) -> dict:
         raise
 
 
-def get_plant_metric_data() -> pd.DataFrame:
-    """Reads the plant metric data from a CSV file."""
-    try:
-        df = pd.read_csv("./clean_plant_info.csv")
-        logging.info("Plant metric data loaded successfully.")
-        return df
-    except FileNotFoundError as e:
-        logging.error("CSV file not found: %s", e)
-        raise
-    except pd.errors.EmptyDataError as e:
-        logging.error("CSV file is empty: %s", e)
-        raise
-
-
-def insert_into_plant_metric(connection: Connection, metric_df: pd.DataFrame, botanist_id_mapping: dict) -> None:
+def insert_plant_metric(conn: Connection, metric_df: pd.DataFrame, botanist_details: dict) -> None:
     """Inserts plant metric data into the database."""
     query = """INSERT INTO epsilon.plant_metric (temperature, soil_moisture,
                 recording_taken, last_watered, botanist_id, plant_id) 
@@ -79,17 +65,17 @@ def insert_into_plant_metric(connection: Connection, metric_df: pd.DataFrame, bo
             row['soil_moisture'],
             row['recording_taken'],
             row['last_watered'],
-            botanist_id_mapping.get(row['name']),
+            botanist_details.get(row['name']),
             row['plant_id']
         ), axis=1).tolist()
 
     if data_to_insert:
         try:
-            with connection.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.executemany(query, data_to_insert)
-                connection.commit()
+                conn.commit()
                 logging.info(
-                    f"Inserted {len(data_to_insert)} rows into the plant_metric table.")
+                    "Inserted %s rows into the plant_metric table.", len(data_to_insert))
         except exceptions.DatabaseError as e:
             logging.error(
                 "Database error while inserting plant metric data: %s", e)
@@ -102,24 +88,23 @@ def insert_into_plant_metric(connection: Connection, metric_df: pd.DataFrame, bo
         logging.warning("No data to insert into the plant_metric table.")
 
 
-def main():
+def main(plant_metrics_df: pd.DataFrame):
+    """ Loads the plant readings into the MS-SQL RDS database. """
     load_dotenv()
 
     try:
-        metric_df = get_plant_metric_data()
 
         with get_connection() as conn:
-            botanist_names = metric_df['name'].unique().tolist()
+            botanist_names = plant_metrics_df['name'].unique().tolist()
 
-            botanist_id_mapping = get_botanists_id_mapping(
+            botanist_id_mapping = get_botanists_details(
                 conn, botanist_names)
 
-            insert_into_plant_metric(conn, metric_df, botanist_id_mapping)
-
+            insert_plant_metric(
+                conn, plant_metrics_df, botanist_id_mapping)
+    except exceptions.OperationalError as e:
+        logging.error("Failed to connect to the database: %s", e)
+        raise
     except Exception as e:
         logging.error(
             "An error occurred during the execution of the program: %s", e)
-
-
-if __name__ == "__main__":
-    main()

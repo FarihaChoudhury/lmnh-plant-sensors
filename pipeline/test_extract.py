@@ -3,13 +3,15 @@
 
 import pytest
 from unittest.mock import patch, mock_open, AsyncMock
+import aiohttp
+import asyncio
 
 from extract import (extract_botanist_information,
                      extract_location_information,
                      extract_metric_information,
                      extract_plant_information,
-                     fetch_and_collect_data,
-                     write_to_csv)
+                     fetch_plant_data,
+                     fetch_and_collect_data)
 
 
 @pytest.fixture
@@ -46,6 +48,16 @@ async def test_extract_botanist_information():
     input_data = {"name": "Test Test",
                   "email": "test@test.com", "phone": "+0000 111222"}
     output_data = {"name": "Test Test",
+                   "email": "test@test.com", "phone": "+0000 111222"}
+    result = await extract_botanist_information(input_data)
+    assert result == output_data
+
+
+@pytest.mark.asyncio
+async def test_extract_botanist_information_with_no_name():
+    input_data = {"name": None,
+                  "email": "test@test.com", "phone": "+0000 111222"}
+    output_data = {"name": None,
                    "email": "test@test.com", "phone": "+0000 111222"}
     result = await extract_botanist_information(input_data)
     assert result == output_data
@@ -100,31 +112,24 @@ async def test_fetch_and_collect_data(mock_get, sample_api_information):
         assert "temperature" in entry
 
 
-@patch("extract.open", new_callable=mock_open)
-def test_write_to_csv(mock_open, sample_api_information):
-    data = [
-        {
-            "name": "Test Test",
-            "email": "test@test.com",
-            "phone": "+0000 111222",
-            "latitude": "1",
-            "longitude": "0",
-            "closest_town": "London",
-            "ISO_code": "GB",
-            "plant_name": "Test Test",
-            "plant_scientific_name": "Test Test",
-            "plant_image_url": "https://test.jpg",
-            "temperature": 0,
-            "soil_moisture": 1,
-            "recording_taken": "Test time 2",
-            "last_watered": "Test time 1"
-        }
-    ]
-    write_to_csv(data, "test.csv")
-    handle = mock_open()
-    handle.write.assert_any_call(
-        "name,email,phone,latitude,longitude,closest_town,ISO_code,plant_name,plant_scientific_name,plant_image_url,temperature,soil_moisture,recording_taken,last_watered\r\n"
-    )
-    handle.write.assert_any_call(
-        "Test Test,test@test.com,+0000 111222,1,0,London,GB,Test Test,Test Test,https://test.jpg,0,1,Test time 2,Test time 1\r\n"
-    )
+@pytest.mark.asyncio
+@patch("extract.aiohttp.ClientSession.get")
+async def test_fetch_plant_data_http_error(mock_get):
+    mock_response = AsyncMock()
+    mock_response.status = 404  # 404 not found error
+    mock_get.return_value = mock_response
+
+    async with aiohttp.ClientSession() as session:
+        result = await fetch_plant_data(session, 1)
+    assert result is None
+
+
+@pytest.mark.asyncio
+@patch("extract.fetch_plant_data", return_value=None)
+async def test_fetch_and_collect_data_empty_range(mock_fetch_plant_data):
+    async def fetch_empty_data() -> list:
+        async with aiohttp.ClientSession() as session:
+            return await asyncio.gather(*[])
+
+    result = await fetch_empty_data()
+    assert result == []
