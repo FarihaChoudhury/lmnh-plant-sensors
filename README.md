@@ -50,6 +50,10 @@ Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors
 
 ![ERD Diagram](/images/ERD-diagram.png)
 
+#### Dashboard Wireframe
+
+![Dashboard Wireframe](/images/wireframe.png)
+
 ### Built With
  [![Python][Python.com]][Python-url]
 
