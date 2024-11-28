@@ -2,7 +2,7 @@
 
 This directory contains all the necessary code and documentation for the Extract Transform Load (ETL) pipeline used to collect, clean and upload the data collected from LNMH's Plant Monitoring array.
 
-## Requirements
+## Requirements 📋
 
 To run this script and containerize into a docker image, you will need the following:
 
@@ -34,7 +34,7 @@ To install these dependencies, use the following command:
 pip3 install -r requirements.txt
 ```
 
-## Files Explained
+## Files Explained 🗂️
 - `Dockerfile` - Containerizes the ETL pipeline to be pushed onto an ECR.
 - `etl.py` - Runs the whole ETL pipeline, from extract to loading to rds, contains lambda_handler for the lambda on AWS.
 - `extract.py` - establishes a connection to the Heroku API to extract plant metrics data generated every minute, ensuring seamless data retrieval for further processing.
@@ -50,7 +50,7 @@ pip3 install -r requirements.txt
 - `test_load.py` - this test file verifies the core functions in `load.py` through unit tests.
 
 
-## Secrets Management
+## Secrets Management 🕵️‍♂️
 Before running the script, you need to set up your AWS credentials. Create a new file called `.env` in the `pipeline` directory and add the following lines, with your actual AWS keys and database details:
 
 | Variable         | Description                                      |
@@ -62,7 +62,7 @@ Before running the script, you need to set up your AWS credentials. Create a new
 | DB_NAME          | The name of the database.                        |
 | SCHEMA_NAME      | The name of the database schema.                 |
 
-## AWS Setup and Docker Instructions
+## AWS Setup and Docker Instructions ⚙️
 
 To set up the AWS environment and build the Docker container, follow these steps:
 

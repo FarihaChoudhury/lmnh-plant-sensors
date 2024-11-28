@@ -2,7 +2,7 @@
 
 This folder contains all the code, documentation and resources necessary for the successful migration of data to the archival data storage.
 
-## Requirements
+## Requirements 📋
 
 To run this script and containerize into a docker image, you will need the following:
 
@@ -28,7 +28,7 @@ To install these dependencies, use the following command:
 pip3 install -r requirements.txt
 ```
 
-## Files Explained
+## Files Explained 🗂️
 - `Dockerfile` - Containerizes the archive pipeline to be pushed onto an ECR for the AWS Lambda.
 - `archive.py` - The main script that archives plant metric data from the last 24 hours into an archive table in the database. It performs the following:
 
@@ -40,11 +40,11 @@ pip3 install -r requirements.txt
     - Logs the status of operations to facilitate debugging.
     - Contains a lambda_handler function for AWS Lambda integration.
 
-## Secrets Management
+## Secrets Management 🕵️‍♂️
 
 ‼️ **Same `.env` file and secrets as pipeline** ‼️
 
-## AWS Setup and Docker Instructions
+## AWS Setup and Docker Instructions ⚙️
 
 To set up the AWS environment and build the Docker container, follow these steps:
 

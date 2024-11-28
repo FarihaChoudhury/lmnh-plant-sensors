@@ -4,7 +4,7 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Table of Contents</summary>
+  <summary>Table of Contents 📝</summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
@@ -36,11 +36,11 @@
   </ol>
 </details>
 
-## About the Project
+## About the Project 🌱
 Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors to monitor critical plant health metrics such as soil moisture and temperature across their conservatory. However, the museum is seeking to enhance its monitoring system by tracking the health of plants over time and providing real-time alerts for gardeners when there is a problem. This project delivers a fully-functioning cloud-based Extract Transform Load (ETL) pipeline incorporating short- and long-term data storage solutions. In addition, the project includes a dynamic dashboard which allows staff constant access to a source of continually updating information. 
 
 
-### Diagrams
+### Diagrams 📊
 
 #### Architecture Diagram
 
@@ -59,7 +59,7 @@ Prerequisites:
 - Python 3.10 must be installed with pip3 for dependency installation.  
 
 
-## Installation
+## Installation ⚙️
 These instructions are for **macOS only**.
 
 1. **Clone the repository to your local machine using the following command**:
@@ -101,7 +101,7 @@ These instructions are for **macOS only**.
         ```
       This will confirm that you are authenticated and have access to your AWS resources.
 
-## Requirements
+## Requirements 📋
 You must have a `.env` file containing:   
 | Variable         | Description                                      |
 |------------------|--------------------------------------------------|
@@ -113,7 +113,7 @@ You must have a `.env` file containing:
 | SCHEMA_NAME      | The name of the database schema.                 |
 
    
-## Folders Explained
+## Folders Explained 📁
 These folders are found this repository:     
 - **[archive](https://github.com/SurinaCS/lmnh-plant-sensors/tree/main/archive)**     
    This folder contains the necessary files to move the data extracted from the previous 24hrs to the S3 bucket where 'archived' data is stored.
@@ -130,7 +130,7 @@ These folders are found this repository:
   This folder contains the infrastructure-as-code (IaC) setup using Terraform. It includes the configuration files to provision and manage cloud resources, required for the Plant Health Monitoring System. These resources are essential for setting up the cloud environment that supports the ETL pipeline and real-time dashboard.
 
 
-## Files Explained
+## Files Explained 🗂️
 These files are found in this repository:
 - **README.md**  
   This is the file you are currently reading, containing information about each file.   
@@ -142,7 +142,7 @@ These files are found in this repository:
 [Python-url]: https://www.python.org/
 
 
-## Developers
+## Developers 👨‍💻👩‍💻
 This project was developed by the following contributors:
 
 - **[Surina Santhokhy](https://github.com/SurinaCS)** - Project Manager & Data Engineer
