@@ -1,5 +1,5 @@
 """Test file for extracting plant data"""
-#  pylint: skip-file
+# pylint: skip-file
 
 import pytest
 from unittest.mock import patch, mock_open, AsyncMock

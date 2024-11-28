@@ -1,5 +1,7 @@
-import os
+""" Test file for archive plant data"""
+# pylint: skip-file
 
+import os
 import unittest
 from unittest.mock import MagicMock, patch, call
 from pymssql import exceptions
