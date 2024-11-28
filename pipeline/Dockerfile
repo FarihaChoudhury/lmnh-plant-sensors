@@ -5,9 +5,9 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
-COPY etl.py .
 COPY extract.py .
 COPY transform.py .
 COPY load.py .
+COPY etl.py .
 
 CMD [ "etl.lambda_handler" ]

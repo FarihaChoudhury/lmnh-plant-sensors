@@ -68,6 +68,12 @@ resource "aws_iam_role_policy" "c14-runtime-terrors-plants-etl-lambda_execution_
   })
 }
 
+resource "aws_cloudwatch_log_group" "lambda_log_group" {
+  name              = "/aws/lambda/c14-runtime-terrors-plants-etl-lambda-function-tf"
+  retention_in_days = 7
+}
+
+
 resource "aws_lambda_function" "c14-runtime-terrors-plants-etl-lambda-function-tf" {
   role          = aws_iam_role.c14-runtime-terrors-plants-etl-lambda_execution_role-tf.arn
   function_name = "c14-runtime-terrors-plants--etl-lambda-function-new-tf"
