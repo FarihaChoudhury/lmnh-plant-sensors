@@ -6,8 +6,9 @@ BEGIN
 END;
 
 DROP TABLE IF EXISTS epsilon.plant_metric;
-DROP TABLE IF EXISTS epsilon.plant;
 DROP TABLE IF EXISTS epsilon.botanist;
+DROP TABLE IF EXISTS epsilon.plants_archive;
+DROP TABLE IF EXISTS epsilon.plant;
 DROP TABLE IF EXISTS epsilon.location;
 
 CREATE TABLE epsilon.location (
@@ -29,7 +30,7 @@ CREATE TABLE epsilon.plant (
     plant_id SMALLINT PRIMARY KEY,
     plant_name VARCHAR(60) NOT NULL,
     scientific_name VARCHAR(60),
-    image_url VARCHAR(255),
+    image_url VARCHAR(500),
     location_id INT NOT NULL,
     FOREIGN KEY (location_id) REFERENCES epsilon.location(location_id) ON DELETE CASCADE
 );
@@ -113,7 +114,7 @@ INSERT INTO botanist (full_name, email, phone) VALUES
 
 -- Seed Plant Data
 INSERT INTO epsilon.plant (plant_id, plant_name, scientific_name, image_url, location_id) VALUES
-(0, 'Epipremnum Aureum', 'Epipremnum aureum', 'https://i0.wp.com/deepgreenpermaculture.com/wp-content/uploads/2024/04/Pothos.png' 1),
+(0, 'Epipremnum Aureum', 'Epipremnum aureum', 'https://i0.wp.com/deepgreenpermaculture.com/wp-content/uploads/2024/04/Pothos.png', 1),
 (1, 'Venus flytrap', NULL, 'https://cdn.shopify.com/s/files/1/0620/2749/7724/files/venus-flytrap-shk-1.jpg', 2),
 (2, 'Corpse flower', NULL, 'https://www.usbg.gov/sites/default/files/images/2021corpseflowerusbg.jpg', 3),
 (3, 'Rafflesia arnoldii', NULL, 'https://www.indonesia-tourism.com/bengkulu/images/raflesia-arnoldii-bengkulu.jpg', 1),
