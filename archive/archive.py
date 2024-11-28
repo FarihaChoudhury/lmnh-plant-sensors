@@ -59,7 +59,7 @@ def upload_plant_metric_data(conn: Connection, plant_details: dict):
     """Uploads the past 24 hour data from plant metrics table into archive table"""
 
     logging.info("Attempting to insert into archive table")
-    query = """INSERT INTO plants_archive (avg_temperature, 
+    query = """INSERT INTO epsilon.plants_archive (avg_temperature, 
                     avg_soil_moisture, watered_count, last_recorded, plant_id)
                 VALUES (%s, %s, %s, %s, %s);"""
 
@@ -108,7 +108,7 @@ def get_latest_recording(conn: Connection, plant_id: int) -> int:
 
 def clear_plant_metrics(conn: Connection) -> None:
     """ Clears all recordings from the plant metrics table."""
-    query = "TRUNCATE TABLE plant_metric;"
+    query = "TRUNCATE TABLE epsiplant_metric;"
     with conn.cursor() as cur:
         cur.execute(query)
 
