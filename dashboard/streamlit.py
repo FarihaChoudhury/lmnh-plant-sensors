@@ -46,33 +46,34 @@ def get_cursor(connection: Connection) -> Cursor:
 def homepage() -> None:
     """Homepage showing visualizations for LNMH."""
     st.set_page_config(layout="wide")
-    st.title("LNMH Plant Monitoring System")
+    st.title("🌱LNMH Plant Monitoring System🌱")
 
     # Fetch data
     connection = get_connection()
     cursor = get_cursor(connection)
     live_metrics = get_latest_metrics(cursor)
+    archival_metrics = get_archival_data(cursor)
 
     # Add filter
     filter_plant = get_plant_filter(list(live_metrics['plant_name']))
+    st.write(" ")
 
     # Filter data
-    filtered_data = filter_by_plant(filter_plant, live_metrics)
-    # st.write(filtered_data)
+    filtered_data = filter_by_plant(
+        filter_plant, live_metrics, archival_metrics)
 
     # Display charts and tables
-    display_charts(filtered_data)
-
-    st.write(get_archival_data(cursor))
+    display_charts(filtered_data[0], filtered_data[1])
 
 
-def display_charts(data: dict) -> None:
-
+def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame) -> None:
+    """Function to display and format charts."""
     temp, name_id = st.columns((6, 1))
     with temp:
-        st.altair_chart(plot_live_temp(data))
+        st.altair_chart(overlay_temperature_chart(data_live,
+                                                  data_archival))
     with name_id:
-        table_data = get_data_plant_table(data)
+        table_data = get_data_plant_table(data_live)
         st.write(
             table_data.style.set_table_styles([
                 {'selector': 'th', 'props': [('text-align', 'left')]},
@@ -82,13 +83,10 @@ def display_charts(data: dict) -> None:
         )
     st.write(" ")
 
-    moisture, y = st.columns((2, 1))
-    with moisture:
-        st.altair_chart(plot_live_moisture(data))
-    with y:
-        st.write(' nnnoooooo ')
+    st.altair_chart(overlay_temperature_chart(data_live,
+                                              data_archival))
 
-    st.altair_chart(plot_last_watered(data))
+    st.altair_chart(plot_last_watered(data_live))
 
 
 def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
@@ -101,11 +99,12 @@ def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
     )
 
 
-def filter_by_plant(selected_plants: list, plant_metrics: pd.DataFrame):
+def filter_by_plant(selected_plants: list, plant_metrics: pd.DataFrame, archive_plants: pd.DataFrame) -> list:
     """Filter visualizations based on selected plant names."""
     if selected_plants:
-        return plant_metrics[plant_metrics['plant_name'].isin(selected_plants)]
-    return plant_metrics
+        return [plant_metrics[plant_metrics['plant_name'].isin(selected_plants)],
+                archive_plants[archive_plants['plant_name'].isin(selected_plants)]]
+    return [plant_metrics, archive_plants]
 
 
 def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
@@ -151,11 +150,7 @@ def plot_live_temp(data: pd.DataFrame) -> AltairChart:
         ),
         tooltip=[alt.Tooltip("temperature:Q", title="Temperature (°C)"),
                  alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
-    ).configure_axis(
-        labelFontSize=12,
-        titleFontSize=14
-    ).configure_title(
-        fontSize=16).interactive()
+    )
 
     return chart
 
@@ -243,7 +238,11 @@ def plot_last_watered(data: pd.DataFrame) -> AltairChart:
 def get_archival_data(cursor: Cursor) -> pd.DataFrame:
     """Function gets archival data including averages of temperature, soil_moisture."""
     query = f"""
-        SELECT pa.avg_temperature, pa.avg_soil_moisture, p.plant_name
+        SELECT 
+            ROUND(pa.avg_temperature, 2) AS avg_temperature, 
+            ROUND(pa.avg_soil_moisture, 2) as avg_soil_moisture, 
+            p.plant_name, 
+            p.plant_id
         FROM {environ['SCHEMA_NAME']}.Plants_archive as pa
          JOIN (SELECT plant_id,
             MAX(last_recorded) as latest_time
@@ -257,6 +256,69 @@ def get_archival_data(cursor: Cursor) -> pd.DataFrame:
     result = cursor.fetchall()
 
     return pd.DataFrame(result)
+
+
+def create_avg_temp_line(data: pd.DataFrame) -> alt.Chart:
+    """Create a line for the average temperature for each plant."""
+    data['plant_id_name'] = data['plant_name'] + \
+        ' (ID: ' + data['plant_id'].astype(str) + ')'
+    avg_line = alt.Chart(data).mark_line(color='#9367B0', point=True).encode(
+        x=alt.X('plant_id:N', title="Plant ID"),
+        y=alt.Y('avg_temperature:Q', title="Average Temperature (°C)"),
+        tooltip=[alt.Tooltip('avg_temperature:Q', title="Average Temperature (°C)"),
+                 alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
+    )
+    return avg_line
+
+
+def create_avg_soil_line(data: pd.DataFrame) -> alt.Chart:
+    """Create a line for the average soil moisture levels for each plant."""
+
+    data['plant_id_name'] = data['plant_name'] + \
+        ' (ID: ' + data['plant_id'].astype(str) + ')'
+    avg_line = alt.Chart(data).mark_line(color='#9367B0', point=True).encode(
+        x=alt.X('plant_id:N', title="Plant ID"),
+        y=alt.Y('avg_soil_moisture:Q', title="Average Soil Moisture Levels"),
+        tooltip=[alt.Tooltip('avg_soil_moisture:Q', title="Average Soil Moisture Level"),
+                 alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
+    )
+    return avg_line
+
+
+def overlay_temperature_chart(data_live: pd.DataFrame, data_archival: pd.DataFrame) -> alt.Chart:
+    """Overlay the live temperature chart with the average line."""
+    bar_chart = plot_live_temp(data_live)
+    avg_line = create_avg_temp_line(data_archival)
+
+    combined_chart = alt.layer(bar_chart, avg_line).resolve_scale(
+        y='shared',
+        x='shared'
+    ).properties(
+        height=400,
+        title="Live Plant Temperature with Average"
+    ).configure_axis(
+        labelFontSize=12,
+        titleFontSize=14
+    ).interactive()
+    return combined_chart
+
+
+def overlay_soil_moisture_chart(data_live: pd.DataFrame, data_archival: pd.DataFrame) -> alt.Chart:
+    """Overlay the live soil moisture levels with the average line for each plant."""
+    bar_chart = plot_live_moisture(data_live)
+    avg_line = create_avg_soil_line(data_archival)
+
+    combined_chart = alt.layer(bar_chart, avg_line).resolve_scale(
+        y='shared',
+        x='shared'
+    ).properties(
+        height=400,
+        title="Live Plant Temperature with Average"
+    ).configure_axis(
+        labelFontSize=12,
+        titleFontSize=14
+    ).interactive()
+    return combined_chart
 
 
 if __name__ == "__main__":
