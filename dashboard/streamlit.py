@@ -47,6 +47,7 @@ def get_cursor(connection: Connection) -> Cursor:
 
 def homepage() -> None:
     """Homepage showing visualizations for LNMH."""
+
     st.set_page_config(page_title="LNHM Plant Metrics",
                        page_icon="seedling", layout="wide")
     emoji_left, title, emoji_right = st.columns((1, 2, 1))
@@ -60,21 +61,17 @@ def homepage() -> None:
         st.markdown("<h1 style='text-align: right;'>🍄🌵🌱</h1>",
                     unsafe_allow_html=True)
 
-    # Fetch data
     connection = get_connection()
     cursor = get_cursor(connection)
     live_metrics = get_latest_metrics(cursor)
     archival_metrics = get_archival_data(cursor)
 
-    # Add filter
     filter_plant = get_plant_filter(list(live_metrics['plant_name']))
     st.write(" ")
 
-    # Filter data
     filtered_data = filter_by_plant(
         filter_plant, live_metrics, archival_metrics)
 
-    # Display charts and tables
     display_charts(filtered_data[0], filtered_data[1])
 
 
@@ -119,31 +116,17 @@ def filter_by_plant(selected_plants: list, plant_metrics: pd.DataFrame, archive_
     return [plant_metrics, archive_plants]
 
 
-# def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
-#     """Function gets the latest plant health metrics including: temperature, soil moisture levels
-#     plant name, time of recording and last_watered, and extracts these to a dataframe."""
-#     query = f"""
-#         SELECT pm.temperature, pm.soil_moisture, latest_recording_info.latest_time,
-#           p.plant_name, pm.plant_id, pm.last_watered
-#         FROM {environ['SCHEMA_NAME']}.plant_metric pm
-#         JOIN (SELECT plant_id,
-#             MAX(recording_taken) as latest_time
-#             FROM {environ['SCHEMA_NAME']}.plant_metric
-#             GROUP BY plant_id) as latest_recording_info
-#         ON pm.plant_id = latest_recording_info.plant_id
-#             AND pm.recording_taken = latest_recording_info.latest_time
-#         JOIN {environ['SCHEMA_NAME']}.plant as p ON pm.plant_id = p.plant_id;
-#         """
-#     cursor.execute(query)
-#     result = cursor.fetchall()
-
-#     return pd.DataFrame(result)
+def link_plant_name_id(data: pd.DataFrame) -> pd.DataFrame:
+    """Create a link between id and name in the dataframe."""
+    data['plant_id_name'] = data['plant_name'] + \
+        ' (ID: ' + data['plant_id'].astype(str) + ')'
+    return data
 
 
 def plot_live_temp(data: pd.DataFrame) -> AltairChart:
     """Function to create a chart to show current temperature for each plant ID."""
-    data['plant_id_name'] = data['plant_name'] + \
-        ' (ID: ' + data['plant_id'].astype(str) + ')'
+
+    data = link_plant_name_id(data)
 
     chart = alt.Chart(data, title="Live Plant Temperature").mark_bar(width=10).encode(
         x=alt.X(
@@ -161,7 +144,7 @@ def plot_live_temp(data: pd.DataFrame) -> AltairChart:
             )
         ),
         tooltip=[alt.Tooltip("temperature:Q", title="Temperature (°C)"),
-                 alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
+                 alt.Tooltip("plant_id_name:N", title="Plant Name (ID)")]
     )
 
     return chart
@@ -169,8 +152,7 @@ def plot_live_temp(data: pd.DataFrame) -> AltairChart:
 
 def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
     """Function to create a plot for the live soil moisture levels of each plant."""
-    data['plant_id_name'] = data['plant_name'] + \
-        ' (ID: ' + data['plant_id'].astype(str) + ')'
+    data = link_plant_name_id(data)
 
     chart = alt.Chart(data, title="Live Plant Soil Moisture Levels").mark_bar(width=10).encode(
         x=alt.X(
@@ -188,32 +170,28 @@ def plot_live_moisture(data: pd.DataFrame) -> AltairChart:
             )
         ),
         tooltip=[alt.Tooltip("soil_moisture:Q", title="Soil Moisture"),
-                 alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
+                 alt.Tooltip("plant_id_name:N", title="Plant Name (ID)")]
     )
     return chart
 
 
 def get_data_plant_table(data: dict) -> pd.DataFrame:
     """Display a table with plant IDs and names in Streamlit."""
-    print(type(data))
+
     df = pd.DataFrame({
         'plant_id': data['plant_id'],
         'plant_name': data['plant_name']
     })
 
-    # Rename columns, set index, and sort
-    table_data = df.rename(columns={
+    return df.rename(columns={
         'plant_id': 'Plant ID',
         'plant_name': 'Plant Name'
     }).set_index('Plant ID').sort_index()
 
-    return table_data
-
 
 def plot_last_watered(data: pd.DataFrame) -> AltairChart:
     """Function to create a plot showing when each plant was last watered."""
-    data['plant_id_name'] = data['plant_name'] + \
-        ' (ID: ' + data['plant_id'].astype(str) + ')'
+    data = link_plant_name_id(data)
     chart = alt.Chart(data, title="Last Watered").mark_point().encode(
         x=alt.X(
             "plant_id:N",
@@ -231,7 +209,7 @@ def plot_last_watered(data: pd.DataFrame) -> AltairChart:
             )
         ),
         tooltip=[alt.Tooltip("last_watered:T", title="Last Watered At"),
-                 alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
+                 alt.Tooltip("plant_id_name:N", title="Plant Name (ID)")]
     ).configure_axis(
         labelFontSize=12,
         titleFontSize=14
@@ -242,38 +220,14 @@ def plot_last_watered(data: pd.DataFrame) -> AltairChart:
     return chart
 
 
-# def get_archival_data(cursor: Cursor) -> pd.DataFrame:
-#     """Function gets archival data including averages of temperature, soil_moisture."""
-#     query = f"""
-#         SELECT
-#             ROUND(pa.avg_temperature, 2) AS avg_temperature,
-#             ROUND(pa.avg_soil_moisture, 2) as avg_soil_moisture,
-#             p.plant_name,
-#             p.plant_id
-#         FROM {environ['SCHEMA_NAME']}.Plants_archive as pa
-#          JOIN (SELECT plant_id,
-#             MAX(last_recorded) as latest_time
-#             FROM {environ['SCHEMA_NAME']}.Plants_archive
-#             GROUP BY plant_id) as last_recording
-#         ON pa.plant_id = last_recording.plant_id
-#         JOIN {environ['SCHEMA_NAME']}.plant as p
-#             ON pa.plant_id = p.plant_id;
-#         """
-#     cursor.execute(query)
-#     result = cursor.fetchall()
-
-#     return pd.DataFrame(result)
-
-
 def create_avg_temp_line(data: pd.DataFrame) -> alt.Chart:
     """Create a line for the average temperature for each plant."""
-    data['plant_id_name'] = data['plant_name'] + \
-        ' (ID: ' + data['plant_id'].astype(str) + ')'
+    data = link_plant_name_id(data)
     avg_line = alt.Chart(data).mark_line(color='#9367B0', point=True).encode(
         x=alt.X('plant_id:N', title="Plant ID"),
         y=alt.Y('avg_temperature:Q', title="Average Temperature (°C)"),
         tooltip=[alt.Tooltip('avg_temperature:Q', title="Average Temperature (°C)"),
-                 alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
+                 alt.Tooltip("plant_id_name:N", title="Plant Name (ID)")]
     )
     return avg_line
 
@@ -281,13 +235,12 @@ def create_avg_temp_line(data: pd.DataFrame) -> alt.Chart:
 def create_avg_soil_line(data: pd.DataFrame) -> alt.Chart:
     """Create a line for the average soil moisture levels for each plant."""
 
-    data['plant_id_name'] = data['plant_name'] + \
-        ' (ID: ' + data['plant_id'].astype(str) + ')'
+    data = link_plant_name_id(data)
     avg_line = alt.Chart(data).mark_line(color='#9367B0', point=True).encode(
         x=alt.X('plant_id:N', title="Plant ID"),
         y=alt.Y('avg_soil_moisture:Q', title="Average Soil Moisture Levels"),
         tooltip=[alt.Tooltip('avg_soil_moisture:Q', title="Average Soil Moisture Level"),
-                 alt.Tooltip("plant_id_name:N", title="Plant ID & Name")]
+                 alt.Tooltip("plant_id_name:N", title="Plant Name (ID)")]
     )
     return avg_line
 
