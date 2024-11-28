@@ -113,7 +113,7 @@ def clear_plant_metrics(conn: Connection) -> None:
         cur.execute(query)
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context) -> None:
     """Moves data in the archive table and cleans the plant_metric table
     when the lambda is invoked"""
     try:
