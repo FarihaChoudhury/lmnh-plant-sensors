@@ -400,7 +400,7 @@ resource "aws_ecs_service" "c14-runtime-terrors-plants-dashboard-service-tf" {
     launch_type     = "FARGATE" 
     
     network_configuration {
-        subnets          = [data.aws_subnet.c14-subnet-1, data.aws_subnet.c14-subnet-2, data.aws_subnet.c14-subnet-3] 
+        subnets          = [data.aws_subnet.c14-subnet-1.id, data.aws_subnet.c14-subnet-2.id, data.aws_subnet.c14-subnet-3.id] 
         security_groups  = [aws_security_group.c14-runtime-terrors-plants-dashboard-sg-tf.id] 
         assign_public_ip = true
     }
