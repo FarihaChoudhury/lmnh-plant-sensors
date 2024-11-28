@@ -9,5 +9,8 @@ COPY extract.py .
 COPY transform.py .
 COPY load.py .
 COPY etl.py .
+COPY extract.py .
+COPY transform.py .
+COPY load.py .
 
 CMD [ "etl.lambda_handler" ]
