@@ -9,6 +9,7 @@ from pymssql import connect, Connection, exceptions, Cursor
 
 def get_connection() -> Connection:
     """Connects to Microsoft SQL Server Database"""
+
     logging.info("Attempting to connect to the database.")
     try:
         conn = connect(
