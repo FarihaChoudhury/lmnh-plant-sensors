@@ -1,4 +1,5 @@
-"""queries.py: data retrieval for dashboard visualisations."""
+
+"""db_queries.py: data retrieval for dashboard visualisations."""
 # pylint: disable = no-name-in-module
 
 from os import environ
@@ -6,11 +7,9 @@ import logging
 import pandas as pd
 from pymssql import connect, Connection, exceptions, Cursor
 
-# DB CONNECTIONS
-
-
 def get_connection() -> Connection:
     """Connects to Microsoft SQL Server Database"""
+
     logging.info("Attempting to connect to the database.")
     try:
         conn = connect(
@@ -39,7 +38,6 @@ def get_cursor(connection: Connection) -> Cursor:
     return connection.cursor()
 
 
-# QUERIES
 def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
     """Function gets the latest plant health metrics including: temperature, soil moisture levels
     plant name, time of recording and last_watered, and extracts these to a dataframe."""

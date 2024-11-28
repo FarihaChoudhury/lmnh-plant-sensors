@@ -1,0 +1,10 @@
+FROM python:3.10
+WORKDIR /dashboard
+COPY requirements.txt . 
+RUN pip3 install -r requirements.txt
+
+COPY streamlit.py .
+COPY db_queries.py .
+
+EXPOSE 8501
+CMD ["streamlit", "run", "streamlit.py", , "--server.port=8501"]
