@@ -41,7 +41,7 @@ Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors
 Here is what our dashboard looks like!
 
 <figure>
- <img src="images/plants.gif" alt="LMNH Plants Dashboard Demo" width="600">
+ <img src="images/plants.gif" alt="LMNH Plants Dashboard Demo" width="900">
  <figcaption>LMNH Plants Dashboard Demo</figcaption>
 </figure>
 
