@@ -53,7 +53,6 @@ def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
         ON pm.plant_id = latest_recording_info.plant_id
             AND pm.recording_taken = latest_recording_info.latest_time
         JOIN {environ['SCHEMA_NAME']}.plant as p ON pm.plant_id = p.plant_id;
-     
        """
     try:
 
@@ -74,19 +73,13 @@ def get_archival_data(cursor: Cursor) -> pd.DataFrame:
     """Function gets archival data including averages of temperature, soil_moisture."""
 
     query = f"""
-        SELECT
-            ROUND(pa.avg_temperature, 2) AS avg_temperature,
-            ROUND(pa.avg_soil_moisture, 2) as avg_soil_moisture,
-            p.plant_name,
-            p.plant_id
-        FROM {environ['SCHEMA_NAME']}.Plants_archive as pa
-        JOIN (SELECT plant_id,
-            MAX(last_recorded) as latest_time
-            FROM {environ['SCHEMA_NAME']}.Plants_archive
-            GROUP BY plant_id) as last_recording
-        ON pa.plant_id = last_recording.plant_id
-        JOIN {environ['SCHEMA_NAME']}.plant as p
-            ON pa.plant_id = p.plant_id;
+        SELECT ROUND(AVG(pa.avg_temperature), 2) AS avg_temperature,
+        ROUND(AVG(pa.avg_soil_moisture), 2) AS avg_soil_moisture,
+        p.plant_name, p.plant_id
+        FROM epsilon.plants_archive AS pa
+        JOIN epsilon.plant AS p
+        ON p.plant_id = pa.plant_id
+        GROUP BY p.plant_name, p.plant_id;
         """
     try:
         cursor.execute(query)
