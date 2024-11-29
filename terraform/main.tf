@@ -68,6 +68,12 @@ resource "aws_iam_role_policy" "c14-runtime-terrors-plants-etl-lambda_execution_
   })
 }
 
+resource "aws_cloudwatch_log_group" "lambda_log_group" {
+  name              = "/aws/lambda/c14-runtime-terrors-plants-etl-lambda-function-tf"
+  retention_in_days = 7
+}
+
+
 resource "aws_lambda_function" "c14-runtime-terrors-plants-etl-lambda-function-tf" {
   role          = aws_iam_role.c14-runtime-terrors-plants-etl-lambda_execution_role-tf.arn
   function_name = "c14-runtime-terrors-plants--etl-lambda-function-new-tf"
@@ -201,7 +207,7 @@ resource "aws_iam_role_policy" "c14-runtime-terrors-plants-archive-lambda_execut
 
 resource "aws_lambda_function" "c14-runtime-terrors-plants-archive-lambda-function-tf" {
   role          = aws_iam_role.c14-runtime-terrors-plants-archive-lambda_execution_role-tf.arn
-  function_name = "c14-runtime-terrors-plants-archive-archive-lambda-function-new-tf"
+  function_name = "c14-runtime-terrors-plants-archive-lambda-function-new-tf"
   package_type  = "Image"
   architectures = ["x86_64"]
   image_uri     = var.ARCHIVE_ECR_URI
@@ -350,6 +356,10 @@ resource "aws_ecs_task_definition" "c14-runtime-terrors-plants-dashboard-ECS-tas
                 {
                     "name": "SCHEMA_NAME",
                     "value": var.SCHEMA_NAME
+                },
+                {
+                  "name": "GEMINI_API_KEY",
+                  "value": var.GEMINI_API_KEY
                 }
             ]
             logConfiguration = {
@@ -394,7 +404,7 @@ resource "aws_ecs_service" "c14-runtime-terrors-plants-dashboard-service-tf" {
     launch_type     = "FARGATE" 
     
     network_configuration {
-        subnets          = [data.aws_subnet.c14-subnet-1, data.aws_subnet.c14-subnet-2, data.aws_subnet.c14-subnet-3] 
+        subnets          = [data.aws_subnet.c14-subnet-1.id, data.aws_subnet.c14-subnet-2.id, data.aws_subnet.c14-subnet-3.id] 
         security_groups  = [aws_security_group.c14-runtime-terrors-plants-dashboard-sg-tf.id] 
         assign_public_ip = true
     }

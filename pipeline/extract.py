@@ -11,7 +11,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(),  # Logs to console
+        logging.StreamHandler(),
     ]
 )
 
@@ -42,13 +42,14 @@ async def extract_plant_information(plant_info: dict) -> dict:
         scientific_name = "None"
 
     if images is not None:
-        images = images['original_url']
+        images = images['small_url']
     else:
         images = "None"
 
     return {"plant_id": plant_info.get('plant_id'),
             "name": plant_info.get('name'),
-            "scientific_name": scientific_name}
+            "scientific_name": scientific_name,
+            "image_url": images}
 
 
 async def extract_metric_information(metric_info: dict) -> dict:
@@ -77,9 +78,12 @@ async def fetch_plant_data(session: aiohttp.ClientSession, number: int) -> dict:
                     "plant_id": plant['plant_id'],
                     "plant_name": plant["name"],
                     "plant_scientific_name": plant["scientific_name"],
+                    "plant_image_url": plant["image_url"],
                     **plant_metric
                 }
                 logging.info("Processed plant ID: %s", number)
+                logging.info("Plant image url is: %s",
+                             combined_data["plant_image_url"])
                 return combined_data
             logging.error(
                 "Failed with status code: %s, plant ID: %s", response.status, number)
@@ -89,7 +93,7 @@ async def fetch_plant_data(session: aiohttp.ClientSession, number: int) -> dict:
         return None
 
 
-async def fetch_and_collect_data() -> list[dict]:
+async def collect_all_plant_data() -> list[dict]:
     """Fetches data concurrently for all plants and returns it as a list of dictionaries"""
     ssl_context = ssl.create_default_context(cafile=certifi.where())
 
@@ -103,7 +107,7 @@ async def fetch_and_collect_data() -> list[dict]:
 
 def main() -> pd.DataFrame:
     """ Extracts the plant insights from the API and returns the necessary data as a list of dictionaries."""
-    return pd.DataFrame(asyncio.run(fetch_and_collect_data()))
+    return pd.DataFrame(asyncio.run(collect_all_plant_data()))
 
 
 if __name__ == "__main__":

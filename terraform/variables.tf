@@ -56,3 +56,7 @@ variable "ARCHIVE_ECR_URI"{
     type = string
 }
 
+variable "GEMINI_API_KEY" {
+    type = string
+}
+

@@ -1,5 +1,6 @@
-"""Test file: transform.py"""
+"""Test file for transforming plant data"""
 # pylint: disable=line-too-long
+# pylint: skip-file
 
 from io import StringIO
 import pytest
@@ -12,6 +13,8 @@ EMAIL_REGEX = """(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-
 
 
 class TestTransformCleaning():
+    """ Test class containing transform tests """
+
     """Class containing tests for the transform.py file."""
     @pytest.fixture
     def sample_csv_data(self):

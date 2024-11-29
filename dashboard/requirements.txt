@@ -1,0 +1,7 @@
+python-dotenv
+pymssql
+pandas
+streamlit
+altair
+google-generativeai
+streamlit-autorefresh
