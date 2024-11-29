@@ -53,7 +53,6 @@ def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
         ON pm.plant_id = latest_recording_info.plant_id
             AND pm.recording_taken = latest_recording_info.latest_time
         JOIN {environ['SCHEMA_NAME']}.plant as p ON pm.plant_id = p.plant_id;
-
        """
     try:
 
