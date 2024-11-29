@@ -8,7 +8,7 @@ from unittest.mock import Mock, MagicMock, patch
 from pymssql import exceptions
 
 from db_queries import (get_connection, get_cursor,
-                        get_archival_data, get_latest_metrics)
+                        get_archival_data, get_latest_metrics, get_plant_image_url)
 
 
 class TestingDBQueries:
@@ -96,6 +96,54 @@ class TestingDBQueries:
         )
         assert str(error.value) == "Operational error occurred"
 
+    @patch.dict(
+    environ,
+    {
+        "DB_HOST": "mock_value",
+        "DB_NAME": "mock_value",
+        "DB_USER": "mock_value",
+        "DB_PASSWORD": "mock_value",
+        "DB_PORT": "mock_value",
+    },)
+    @patch('db_queries.connect')
+    def test_get_connection_exception(self, mock_connect):
+        """Test OperationalError when database connection fails."""
+        mock_connect.side_effect = Exception(
+            "Unexpected error while connecting to database:")
+
+        with pytest.raises(Exception) as error:
+            get_connection()
+
+        mock_connect.assert_called_once_with(
+            server='mock_value',
+            port='mock_value',
+            user='mock_value',
+            password='mock_value',
+            database='mock_value',
+            as_dict=True
+        )
+        assert str(error.value) == "Unexpected error while connecting to database:"
+
+    @patch.dict(
+    environ,
+    {
+        "DB_HOST": "mock_value",
+        "DB_NAME": "mock_value",
+        "DB_USER": "mock_value",
+        "DB_PASSWORD": "mock_value",
+        "DB_PORT": "mock_value",
+    },)
+    @patch('db_queries.connect')
+    def test_get_cursor(self, mock_connect):
+        """Test the get_cursor function returns a valid cursor."""
+        
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connection.cursor.return_value = mock_cursor
+        cursor = get_cursor(mock_connection)
+
+        mock_connection.cursor.assert_called_once() 
+        assert cursor == mock_cursor
 
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
@@ -134,9 +182,11 @@ class TestingDBQueries:
                                        "soil_moisture", "latest_time", 
                                        "plant_name", "plant_id", "last_watered"}
     
+
+        
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
-    def test_unsuccessful_latest_metrics(self, mock_connect, caplog):
+    def test_unsuccessful_latest_metrics_operational(self, mock_connect, caplog):
         """Test that unsuccessful retrieval is handled gracefully. """
 
         mock_connection = MagicMock()
@@ -153,6 +203,28 @@ class TestingDBQueries:
             assert "Error connecting or general operation issues" in caplog.text
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
+
+
+    @patch("db_queries.connect")
+    @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
+    def test_unsuccessful_latest_metrics_exception(self, mock_connect, caplog):
+        """Test that unsuccessful retrieval is handled gracefully. """
+
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connect.return_value = mock_connection
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+
+        mock_cursor.execute.side_effect = Exception("Simulated database error")
+
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(Exception):
+                get_latest_metrics(mock_cursor)
+
+            assert "Error occurred whilst fetching live metrics:" in caplog.text
+            mock_cursor.execute.assert_called_once()
+            mock_cursor.fetchall.assert_not_called()
+
 
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
@@ -177,7 +249,7 @@ class TestingDBQueries:
 
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
-    def test_unsuccessful_archival_metrics(self, mock_connect, caplog):
+    def test_unsuccessful_archival_metrics_operational(self, mock_connect, caplog):
         """Test that unsuccessful retrieval is handled gracefully. """
 
         mock_connection = MagicMock()
@@ -194,10 +266,84 @@ class TestingDBQueries:
             assert "Error connecting or general operation issues" in caplog.text
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
-# tests to write
 
-# test latest_metrics
-# test archival
-# test empty results handling
+
+    @patch("db_queries.connect")
+    @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
+    def test_unsuccessful_archival_exception(self, mock_connect, caplog):
+        """Test that unsuccessful retrieval is handled gracefully. """
+
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connect.return_value = mock_connection
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+
+        mock_cursor.execute.side_effect = Exception("Simulated database error")
+
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(Exception):
+                get_archival_data(mock_cursor)
+
+            assert "Error occurred whilst fetching archival metrics:" in caplog.text
+            mock_cursor.execute.assert_called_once()
+            mock_cursor.fetchall.assert_not_called()
+
+
+    @patch("db_queries.connect")
+    @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
+    def test_successful_link(self, mock_connect):
+        """Test that archival temp and soil metrics retrieved successfully."""
+    
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connect.return_value = mock_connection
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+
+        mock_cursor.fetchone.return_value = pd.DataFrame([{'image_url': 'test.com'}])
+
+        result = get_plant_image_url(mock_cursor, 'test')
+        assert isinstance(result, pd.DataFrame)
+        assert set(result.columns) == {'image_url'}
+
+    @patch("db_queries.connect")
+    @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
+    def test_unsuccessful_plant_url_operational(self, mock_connect, caplog):
+        """Test that unsuccessful retrieval is handled gracefully. """
+
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connect.return_value = mock_connection
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+
+        mock_cursor.execute.side_effect = exceptions.OperationalError("Simulated database error")
+
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(exceptions.OperationalError):
+                get_plant_image_url(mock_cursor, 'test')
+
+            assert "Error connecting or general operation issues" in caplog.text
+            mock_cursor.execute.assert_called_once()
+            mock_cursor.fetchall.assert_not_called()
+
+    @patch("db_queries.connect")
+    @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
+    def test_unsuccessful_plant_url_exception(self, mock_connect, caplog):
+        """Test that unsuccessful retrieval is handled gracefully. """
+
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connect.return_value = mock_connection
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+
+        mock_cursor.execute.side_effect = Exception("Simulated database error")
+
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(Exception):
+                get_plant_image_url(mock_cursor, 'test')
+
+            assert "Error occurred whilst fetching plant image url" in caplog.text
+            mock_cursor.execute.assert_called_once()
+            mock_cursor.fetchall.assert_not_called()
+
 
 

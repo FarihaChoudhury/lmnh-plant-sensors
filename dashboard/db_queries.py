@@ -93,9 +93,24 @@ def get_archival_data(cursor: Cursor) -> pd.DataFrame:
         logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
         raise
     except Exception as e:
-        logging.error("Error occurred whilst fetching live metrics: %s", e)
+        logging.error("Error occurred whilst fetching archival metrics: %s", e)
         raise
 
 
     return pd.DataFrame(result)
 
+def get_plant_image_url(cursor: Cursor, plant_name: str) -> str:
+    """Extracts the plant image url for a plant by its name."""
+    query = """ SELECT image_url 
+                FROM epsilon.plant 
+                WHERE plant_name = %s;"""
+    try:
+        cursor.execute(query, (plant_name,))
+        result = cursor.fetchone()
+    except exceptions.OperationalError as e:
+        logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
+        raise
+    except Exception as e:
+        logging.error("Error occurred whilst fetching plant image url: %s", e)
+        raise
+    return result
