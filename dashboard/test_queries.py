@@ -1,5 +1,5 @@
 """Test file for queries.py"""
-# pylint: skip-file 
+# pylint: skip-file
 from os import environ
 import pandas as pd
 import pytest
@@ -18,6 +18,7 @@ class TestingDBQueries:
     def mock_cursor(self):
         """Mock cursor to avoid real world db connections."""
         return Mock()
+
     @patch.dict(
         environ,
         {
@@ -97,14 +98,14 @@ class TestingDBQueries:
         assert str(error.value) == "Operational error occurred"
 
     @patch.dict(
-    environ,
-    {
-        "DB_HOST": "mock_value",
-        "DB_NAME": "mock_value",
-        "DB_USER": "mock_value",
-        "DB_PASSWORD": "mock_value",
-        "DB_PORT": "mock_value",
-    },)
+        environ,
+        {
+            "DB_HOST": "mock_value",
+            "DB_NAME": "mock_value",
+            "DB_USER": "mock_value",
+            "DB_PASSWORD": "mock_value",
+            "DB_PORT": "mock_value",
+        },)
     @patch('db_queries.connect')
     def test_get_connection_exception(self, mock_connect):
         """Test General Exception when database connection fails."""
@@ -122,68 +123,67 @@ class TestingDBQueries:
             database='mock_value',
             as_dict=True
         )
-        assert str(error.value) == "Unexpected error while connecting to database:"
+        assert str(
+            error.value) == "Unexpected error while connecting to database:"
 
     @patch.dict(
-    environ,
-    {
-        "DB_HOST": "mock_value",
-        "DB_NAME": "mock_value",
-        "DB_USER": "mock_value",
-        "DB_PASSWORD": "mock_value",
-        "DB_PORT": "mock_value",
-    },)
+        environ,
+        {
+            "DB_HOST": "mock_value",
+            "DB_NAME": "mock_value",
+            "DB_USER": "mock_value",
+            "DB_PASSWORD": "mock_value",
+            "DB_PORT": "mock_value",
+        },)
     @patch('db_queries.connect')
     def test_get_cursor(self, mock_connect):
         """Test the get_cursor function returns a valid cursor."""
-        
+
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
         mock_connection.cursor.return_value = mock_cursor
         cursor = get_cursor(mock_connection)
 
-        mock_connection.cursor.assert_called_once() 
+        mock_connection.cursor.assert_called_once()
         assert cursor == mock_cursor
 
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_successful_latest_metrics(self, mock_connect):
         """Test that latest temp and soil metrics retrieved successfully."""
-    
+
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
         mock_connect.return_value = mock_connection
         mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
 
         mock_cursor.fetchall.return_value = [
-                {
-                    "temperature": 22.5,
-                    "soil_moisture": 35.2,
-                    "latest_time": "2024-11-27 14:30:00",
-                    "plant_name": "Aloe Vera",
-                    "plant_id": 1,
-                    "last_watered": "2024-11-26 10:00:00"
-                },
-                {
-                    "temperature": 24.1,
-                    "soil_moisture": 40.5,
-                    "latest_time": "2024-11-27 15:45:00",
-                    "plant_name": "Snake Plant",
-                    "plant_id": 2,
-                    "last_watered": "2024-11-25 08:30:00"
-                }
-            ]
+            {
+                "temperature": 22.5,
+                "soil_moisture": 35.2,
+                "latest_time": "2024-11-27 14:30:00",
+                "plant_name": "Aloe Vera",
+                "plant_id": 1,
+                "last_watered": "2024-11-26 10:00:00"
+            },
+            {
+                "temperature": 24.1,
+                "soil_moisture": 40.5,
+                "latest_time": "2024-11-27 15:45:00",
+                "plant_name": "Snake Plant",
+                "plant_id": 2,
+                "last_watered": "2024-11-25 08:30:00"
+            }
+        ]
 
         result = get_latest_metrics(mock_cursor)
 
         assert result.shape == (2, 6)
         assert isinstance(result, pd.DataFrame)
-        assert set(result.columns) == {"temperature", 
-                                       "soil_moisture", "latest_time", 
+        assert set(result.columns) == {"temperature",
+                                       "soil_moisture", "latest_time",
                                        "plant_name", "plant_id", "last_watered"}
-    
 
-        
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_unsuccessful_latest_metrics_operational(self, mock_connect, caplog):
@@ -194,16 +194,16 @@ class TestingDBQueries:
         mock_connect.return_value = mock_connection
         mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
 
-        mock_cursor.execute.side_effect = exceptions.OperationalError("Simulated database error")
+        mock_cursor.execute.side_effect = exceptions.OperationalError(
+            "Simulated database error")
 
         with caplog.at_level(logging.ERROR):
             with pytest.raises(exceptions.OperationalError):
                 get_latest_metrics(mock_cursor)
 
-            assert "Error connecting or general operation issues" in caplog.text
+            assert "Operational error occurred connecting whilst fetching live metrics" in caplog.text
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
-
 
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
@@ -225,27 +225,29 @@ class TestingDBQueries:
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
 
-
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_successful_archival_metrics(self, mock_connect):
         """Test that archival temp and soil metrics retrieved successfully."""
-    
+
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
         mock_connect.return_value = mock_connection
         mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
 
         mock_cursor.fetchall.return_value = [
-        {"avg_temperature": 22.5, "avg_soil_moisture": 30.4, "plant_name": "Aloe Vera", "plant_id": 1},
-        {"avg_temperature": 25.0, "avg_soil_moisture": 50.0, "plant_name": "Bamboo", "plant_id": 2},
-    ]
+            {"avg_temperature": 22.5, "avg_soil_moisture": 30.4,
+                "plant_name": "Aloe Vera", "plant_id": 1},
+            {"avg_temperature": 25.0, "avg_soil_moisture": 50.0,
+                "plant_name": "Bamboo", "plant_id": 2},
+        ]
 
         result = get_archival_data(mock_cursor)
 
         assert result.shape == (2, 4)
         assert isinstance(result, pd.DataFrame)
-        assert set(result.columns) == {'plant_id', 'avg_soil_moisture', 'plant_name', 'avg_temperature'}
+        assert set(result.columns) == {
+            'plant_id', 'avg_soil_moisture', 'plant_name', 'avg_temperature'}
 
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
@@ -257,16 +259,16 @@ class TestingDBQueries:
         mock_connect.return_value = mock_connection
         mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
 
-        mock_cursor.execute.side_effect = exceptions.OperationalError("Simulated database error")
+        mock_cursor.execute.side_effect = exceptions.OperationalError(
+            "Simulated database error")
 
         with caplog.at_level(logging.ERROR):
             with pytest.raises(exceptions.OperationalError):
                 get_latest_metrics(mock_cursor)
 
-            assert "Error connecting or general operation issues" in caplog.text
+            assert "Operational error occurred connecting whilst fetching live metrics" in caplog.text
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
-
 
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
@@ -288,18 +290,18 @@ class TestingDBQueries:
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
 
-
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_successful_link(self, mock_connect):
         """Test that archival temp and soil metrics retrieved successfully."""
-    
+
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
         mock_connect.return_value = mock_connection
         mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
 
-        mock_cursor.fetchone.return_value = pd.DataFrame([{'image_url': 'test.com'}])
+        mock_cursor.fetchone.return_value = pd.DataFrame(
+            [{'image_url': 'test.com'}])
 
         result = get_plant_image_url(mock_cursor, 'test')
         assert isinstance(result, pd.DataFrame)
@@ -315,13 +317,14 @@ class TestingDBQueries:
         mock_connect.return_value = mock_connection
         mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
 
-        mock_cursor.execute.side_effect = exceptions.OperationalError("Simulated database error")
+        mock_cursor.execute.side_effect = exceptions.OperationalError(
+            "Simulated database error")
 
         with caplog.at_level(logging.ERROR):
             with pytest.raises(exceptions.OperationalError):
                 get_plant_image_url(mock_cursor, 'test')
 
-            assert "Error connecting or general operation issues" in caplog.text
+            assert "Operational error occurred connecting whilst fetching live metrics" in caplog.text
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
 
@@ -344,6 +347,3 @@ class TestingDBQueries:
             assert "Error occurred whilst fetching plant image url" in caplog.text
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
-
-
-

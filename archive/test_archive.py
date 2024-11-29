@@ -65,7 +65,7 @@ class TestArchive(unittest.TestCase):
     )
     @patch("archive.connect")
     def test_get_connection_operational_error(self, mock_connect):
-        """"""
+        """Tests that operational error raised """
         mock_connect.side_effect = exceptions.OperationalError(
             "OperationalError")
 
@@ -74,13 +74,14 @@ class TestArchive(unittest.TestCase):
 
     @patch("archive.connect")
     def test_get_connection_unexpected_error(self, mock_connect):
-        """"""
+        """Tests that unexpected error raised """
         mock_connect.side_effect = Exception("UnexpectedError")
         with self.assertRaises(Exception):
             get_connection()
 
     @patch("archive.get_connection")
     def test_get_all_plant_ids(self, mock_get_connection):
+        """Tests that connection gets all the plant ids successfully """
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_cursor.fetchall.return_value = [{"plant_id": 1}, {"plant_id": 2}]
@@ -96,6 +97,7 @@ class TestArchive(unittest.TestCase):
     @patch("archive.get_latest_recording")
     @patch("archive.calculate_archive_metrics")
     def test_get_plants_data(self, mock_calculate_metrics, mock_get_latest_recording, mock_upload_data):
+        """ Tests that query retrieves all plant data successfully"""
         mock_conn = MagicMock()
         plant_ids = [1, 2]
 
@@ -130,6 +132,7 @@ class TestArchive(unittest.TestCase):
 
     @patch("archive.get_connection")
     def test_clear_plant_metrics(self, mock_get_connection):
+        """" Tests that truncate is called on plant metric table  """
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
@@ -144,6 +147,7 @@ class TestArchive(unittest.TestCase):
     @patch("archive.get_plants_data")
     @patch("archive.clear_plant_metrics")
     def test_lambda_handler_success(self, mock_clear, mock_get_data, mock_get_ids, mock_get_conn):
+        """ Tests lambda handler successfully archives. """
         mock_get_conn.return_value = MagicMock()
         mock_get_ids.return_value = [1, 2]
 
@@ -155,6 +159,7 @@ class TestArchive(unittest.TestCase):
 
     @patch("archive.get_connection")
     def test_lambda_handler_failure(self, mock_get_conn):
+        """ tests that lambda handler raises error if status code 500. """
         mock_get_conn.side_effect = Exception("Connection Error")
         response = lambda_handler(None, None)
         self.assertEqual(response["statusCode"], 500)
@@ -183,6 +188,7 @@ class TestArchive(unittest.TestCase):
 
     @ patch("archive.get_connection")
     def test_calculate_archive_metrics(self, mock_get_connection):
+        """ tests calculate archive runs correct query """
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_cursor.fetchall.return_value = [
@@ -202,6 +208,7 @@ class TestArchive(unittest.TestCase):
 
     @ patch("archive.get_connection")
     def test_get_latest_recording(self, mock_get_connection):
+        """ tests calculate latest recording runs correct query """
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_cursor.fetchall.return_value = [

@@ -61,7 +61,6 @@ def get_plants_data(conn: Connection, plant_ids) -> None:
 def upload_plant_metric_data(conn: Connection, plant_details: dict) -> None:
     """Uploads the past 24 hour data from plant metrics table into archive table"""
 
-    logging.info("Attempting to insert into archive table")
     query = """INSERT INTO epsilon.plants_archive (avg_temperature, 
                     avg_soil_moisture, watered_count, last_recorded, plant_id)
                 VALUES (%s, %s, %s, %s, %s);"""
@@ -73,6 +72,8 @@ def upload_plant_metric_data(conn: Connection, plant_details: dict) -> None:
     plant_id = plant_details.get("plant_id")
 
     with conn.cursor() as cur:
+        logging.info("Attempting to insert into archive table - plant: %s",
+                     plant_details.get("plant_id"))
         cur.execute(query, (avg_temp, avg_soil_moist,
                     watered_count, last_recorded, plant_id))
         conn.commit()
@@ -141,3 +142,7 @@ def lambda_handler(event, context) -> None:
             "statusCode": 500,
             "body": f"An unexpected error occurred: {e}"
         }
+
+
+if __name__ == "__main__":
+    lambda_handler(None, None)
