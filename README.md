@@ -6,31 +6,31 @@
   <summary>Table of Contents 📝</summary>
   <ol>
     <li>
-      <a href="#about-the-project-🌱">About The Project</a>
+      <a href="#About-The-Project-🌱">About The Project</a>
       <ul>
-        <li><a href="#diagrams-📊">Diagrams</a></li>
+        <li><a href="#Diagrams-📊">Diagrams</a></li>
       </ul>
       <ul>
-        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#Built-With">Built With</a></li>
       </ul>
     </li>
     <li>
-      <a href="#🛠️-getting-started">Getting Started</a>
+      <a href="#🛠️-Getting-Started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation-⚙️">Installation</a></li>
+        <li><a href="#Prerequisites">Prerequisites</a></li>
+        <li><a href="#Installation-⚙️">Installation</a></li>
       </ul>
     <li>
-      <a href="#requirements-📋">Requirements</a>
+      <a href="#Requirements-📋">Requirements</a>
     </li>
     <li>
-      <a href="#folders-explained-📁">Folders Explained</a>
+      <a href="#Folders-Explained-📁">Folders Explained</a>
     </li>
     <li>
-      <a href="#files-explained-🗂️">Files Explained</a>
+      <a href="#Eiles-Explained-🗂️">Files Explained</a>
     </li>
     <li>
-      <a href="#developers-👨🏽‍💻👩🏽‍💻">Developers</a>
+      <a href="#Developers-👨🏽‍💻👩🏽‍💻">Developers</a>
     </li>
   </ol>
 </details>
