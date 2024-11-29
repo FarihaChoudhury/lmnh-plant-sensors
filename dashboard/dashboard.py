@@ -39,11 +39,32 @@ def homepage() -> None:
 
     archival_metrics = get_archival_data(cursor)
     plant_metrics = get_latest_metrics(cursor)
-    filter_plant = get_plant_filter(
-        list(plant_metrics['plant_name']))
-    st.write(" ")
 
-    populate_columns(cursor, archival_metrics, plant_metrics, filter_plant)
+    try:
+        filter_plant = get_plant_filter(
+            list(plant_metrics['plant_name']))
+        populate_columns(cursor, archival_metrics, plant_metrics, filter_plant)
+
+    except Exception:
+
+        st.markdown(
+            """<h2 style='text-align: center;'>No data in the system currently 😔 
+            Please wait a minute</h2>""",
+            unsafe_allow_html=True)
+
+        sad_groot_code = """
+        <div style="text-align: center;">
+            <iframe src="https://giphy.com/embed/PjsTGR81wrBIY" 
+                    width="270" height="480" style="border:none;" 
+                    frameBorder="0" class="giphy-embed" 
+                    allowFullScreen>
+            </iframe>
+            <p><a href="https://giphy.com/gifs/groot-PjsTGR81wrBIY">via GIPHY</a></p>
+        </div>
+        """
+
+        st.components.v1.html(sad_groot_code, height=500)
+    st.write(" ")
 
 
 def populate_columns(cursor: Cursor, archival_metrics: pd.DataFrame,
@@ -76,7 +97,6 @@ def populate_columns(cursor: Cursor, archival_metrics: pd.DataFrame,
         live_metrics = get_latest_metrics(cursor)
         filtered_data = filter_by_plant(
             filter_plant, live_metrics, archival_metrics)
-
         display_charts(
             filtered_data[0], filtered_data[1])
 
