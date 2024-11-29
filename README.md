@@ -2,43 +2,40 @@
 ![Pytest Score](.github/badges/test.svg)
 # Liverpool Natural History Museum: Plant Health Monitoring System
 
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents 📝</summary>
   <ol>
     <li>
-      <a href="#about-the-project">About The Project</a>
+      <a href="#about-the-project-">About The Project</a>
       <ul>
-        <li><a href="#Diagrams">Diagrams</a></li>
-      </ul>
-      <ul>
+        <li><a href="#diagrams-">Diagrams</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
     <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="https://github.com/SurinaCS/lmnh-plant-sensors/blob/cf0a61daaeb11f05ec92ab97172d9e2ce51b836a/README.md#getting-started-%EF%B8%8F">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
-    <li>
-    <a href="#Requirements">Requirements</a>
     </li>
     <li>
-    <a href="#folders-explained">Files Explained</a>
+      <a href="#requirements-">Requirements</a>
     </li>
     <li>
-    <a href="#files-explained">Folders Explained</a>
+      <a href="#folders-explained-">Folders Explained</a>
     </li>
     <li>
-    <a href="#developers">Developers</a>
+      <a href="https://github.com/SurinaCS/lmnh-plant-sensors/blob/cf0a61daaeb11f05ec92ab97172d9e2ce51b836a/README.md#files-explained%EF%B8%8F">Files Explained</a>
+    </li>
+    <li>
+      <a href="#developers-">Developers</a>
     </li>
   </ol>
 </details>
 
 ## About the Project 🌱
 Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors to monitor critical plant health metrics such as soil moisture and temperature across their conservatory. However, the museum is seeking to enhance its monitoring system by tracking the health of plants over time and providing real-time alerts for gardeners when there is a problem. This project delivers a fully-functioning cloud-based Extract Transform Load (ETL) pipeline incorporating short- and long-term data storage solutions. In addition, the project includes a dynamic dashboard which allows staff constant access to a source of continually updating information. 
-
 
 ### Diagrams 📊
 
@@ -58,12 +55,12 @@ Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors
  [![Python][Python.com]][Python-url]
 
 
-## 🛠️ Getting Started
-Prerequisites:
+## Getting Started 🛠️
+
+### Prerequisites:
 - Python 3.10 must be installed with pip3 for dependency installation.  
 
-
-## Installation ⚙️
+### Installation:
 These instructions are for **macOS only**.
 
 1. **Clone the repository to your local machine using the following command**:
@@ -134,7 +131,7 @@ These folders are found this repository:
   This folder contains the infrastructure-as-code (IaC) setup using Terraform. It includes the configuration files to provision and manage cloud resources, required for the Plant Health Monitoring System. These resources are essential for setting up the cloud environment that supports the ETL pipeline and real-time dashboard.
 
 
-## Files Explained 🗂️
+## Files Explained🗂️
 These files are found in this repository:
 - **README.md**  
   This is the file you are currently reading, containing information about each file.   
