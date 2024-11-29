@@ -71,8 +71,6 @@ def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame, cursor)
         plant_url = get_plant_image_url(cursor, single_plant_chosen)
         display_plant_image(plant_url)
 
-    st.altair_chart(plot_last_watered(data_live))
-
 
 def filter_single_plant_for_image(plant_names: list) -> str:
     """Filter for one plant to display image for"""
@@ -88,6 +86,9 @@ def display_plant_image(plant_url: str) -> None:
     if plant_url:
         st.image(plant_url['image_url'],
                  use_container_width=True, width=500)
+    else:
+        st.write(
+            "Ooops! No picture for this plant can be found, try a different plant!")
 
 
 def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
