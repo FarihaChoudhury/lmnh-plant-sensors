@@ -107,7 +107,7 @@ class TestingDBQueries:
     },)
     @patch('db_queries.connect')
     def test_get_connection_exception(self, mock_connect):
-        """Test OperationalError when database connection fails."""
+        """Test General Exception when database connection fails."""
         mock_connect.side_effect = Exception(
             "Unexpected error while connecting to database:")
 
@@ -187,7 +187,7 @@ class TestingDBQueries:
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_unsuccessful_latest_metrics_operational(self, mock_connect, caplog):
-        """Test that unsuccessful retrieval is handled gracefully. """
+        """Test that unsuccessful retrieval is handled gracefully with Operational Error. """
 
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
@@ -208,7 +208,7 @@ class TestingDBQueries:
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_unsuccessful_latest_metrics_exception(self, mock_connect, caplog):
-        """Test that unsuccessful retrieval is handled gracefully. """
+        """Test that unsuccessful retrieval is handled gracefully with fallback general exception. """
 
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
@@ -250,7 +250,7 @@ class TestingDBQueries:
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_unsuccessful_archival_metrics_operational(self, mock_connect, caplog):
-        """Test that unsuccessful retrieval is handled gracefully. """
+        """Test that unsuccessful retrieval is handled gracefully with operational error. """
 
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
@@ -271,7 +271,7 @@ class TestingDBQueries:
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_unsuccessful_archival_exception(self, mock_connect, caplog):
-        """Test that unsuccessful retrieval is handled gracefully. """
+        """Test that unsuccessful retrieval is handled gracefully with fallback general error. """
 
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
@@ -308,7 +308,7 @@ class TestingDBQueries:
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_unsuccessful_plant_url_operational(self, mock_connect, caplog):
-        """Test that unsuccessful retrieval is handled gracefully. """
+        """Test that unsuccessful retrieval is handled gracefully with operational error. """
 
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
@@ -328,7 +328,7 @@ class TestingDBQueries:
     @patch("db_queries.connect")
     @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
     def test_unsuccessful_plant_url_exception(self, mock_connect, caplog):
-        """Test that unsuccessful retrieval is handled gracefully. """
+        """Test that unsuccessful retrieval is handled gracefully with fallback general exception. """
 
         mock_connection = MagicMock()
         mock_cursor = MagicMock()
