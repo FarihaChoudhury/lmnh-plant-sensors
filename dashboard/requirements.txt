@@ -3,3 +3,4 @@ pymssql
 pandas
 streamlit
 altair
+google-generativeai
