@@ -40,15 +40,38 @@ def homepage() -> None:
 
     archival_metrics = get_archival_data(cursor)
     plant_metrics = get_latest_metrics(cursor)
-    filter_plant = get_plant_filter(
-        list(plant_metrics['plant_name']))
+
+    try:
+        filter_plant = get_plant_filter(
+            list(plant_metrics['plant_name']))
+        populate_columns(cursor, archival_metrics, plant_metrics, filter_plant)
+    except Exception:
+        st.markdown(
+            """<h2 style='text-align: center;'>No data in the system currently 😔 
+            Please wait a minute</h2>""",
+            unsafe_allow_html=True)
+        embed_gif()
     st.write(" ")
 
-    populate_columns(cursor, archival_metrics, plant_metrics, filter_plant)
+
+def embed_gif() -> None:
+    """Embeds gif into Streamlit dasboard."""
+    sad_groot_code = """
+    <div style="text-align: center;">
+        <iframe src="https://giphy.com/embed/PjsTGR81wrBIY"
+                width="270" height="480" style="border:none;"
+                frameBorder="0" class="giphy-embed"
+                allowFullScreen>
+        </iframe>
+        <p><a href="https://giphy.com/gifs/groot-PjsTGR81wrBIY">via GIPHY</a></p>
+    </div>
+    """
+
+    st.components.v1.html(sad_groot_code, height=500)
 
 
 def populate_columns(cursor: Cursor, archival_metrics: pd.DataFrame,
-                     plant_metrics: pd.DataFrame, filter_plant: list):
+                     plant_metrics: pd.DataFrame, filter_plant: list) -> None:
     """ Create and populate columns of the dashboard container. Left side contains graphs.
         Right side contains legend and plant images. """
     left, space, right = st.columns((6, 0.2, 1))
@@ -77,7 +100,6 @@ def populate_columns(cursor: Cursor, archival_metrics: pd.DataFrame,
         live_metrics = get_latest_metrics(cursor)
         filtered_data = filter_by_plant(
             filter_plant, live_metrics, archival_metrics)
-
         display_charts(
             filtered_data[0], filtered_data[1])
 
