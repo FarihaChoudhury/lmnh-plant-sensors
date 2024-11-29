@@ -143,21 +143,59 @@ class TestingDBQueries:
         mock_cursor = MagicMock()
         mock_connect.return_value = mock_connection
         mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
-        mock_cursor.fetchall.return_value = None
 
+        mock_cursor.execute.side_effect = exceptions.OperationalError("Simulated database error")
 
-        
-        with caplog.at_level(logging.WARNING):
-            get_latest_metrics(mock_cursor)
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(exceptions.OperationalError):
+                get_latest_metrics(mock_cursor)
 
-        assert "No data to insert into the plant_metric table." in caplog.text
-        mock_connection.cursor.assert_not_called()
+            assert "Error connecting or general operation issues" in caplog.text
+            mock_cursor.execute.assert_called_once()
+            mock_cursor.fetchall.assert_not_called()
 
+    @patch("db_queries.connect")
+    @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
+    def test_successful_archival_metrics(self, mock_connect):
+        """Test that archival temp and soil metrics retrieved successfully."""
+    
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connect.return_value = mock_connection
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
 
+        mock_cursor.fetchall.return_value = [
+        {"avg_temperature": 22.5, "avg_soil_moisture": 30.4, "plant_name": "Aloe Vera", "plant_id": 1},
+        {"avg_temperature": 25.0, "avg_soil_moisture": 50.0, "plant_name": "Bamboo", "plant_id": 2},
+    ]
+
+        result = get_archival_data(mock_cursor)
+
+        assert result.shape == (2, 4)
+        assert isinstance(result, pd.DataFrame)
+        assert set(result.columns) == {'plant_id', 'avg_soil_moisture', 'plant_name', 'avg_temperature'}
+
+    @patch("db_queries.connect")
+    @patch("db_queries.environ", {"SCHEMA_NAME": "test_schema"})
+    def test_unsuccessful_archival_metrics(self, mock_connect, caplog):
+        """Test that unsuccessful retrieval is handled gracefully. """
+
+        mock_connection = MagicMock()
+        mock_cursor = MagicMock()
+        mock_connect.return_value = mock_connection
+        mock_connection.cursor.return_value.__enter__.return_value = mock_cursor
+
+        mock_cursor.execute.side_effect = exceptions.OperationalError("Simulated database error")
+
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(exceptions.OperationalError):
+                get_latest_metrics(mock_cursor)
+
+            assert "Error connecting or general operation issues" in caplog.text
+            mock_cursor.execute.assert_called_once()
+            mock_cursor.fetchall.assert_not_called()
 # tests to write
-# test valid connection
-# test bad connection
-# test cursor good
+
 # test latest_metrics
 # test archival
 # test empty results handling
