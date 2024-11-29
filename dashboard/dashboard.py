@@ -1,9 +1,11 @@
 """Streamlit Dashboard for LNMH Plant Monitoring System."""
 
+import time
 from dotenv import load_dotenv
 import pandas as pd
 import streamlit as st
 import altair as alt
+from streamlit_autorefresh import st_autorefresh
 
 from db_queries import (get_archival_data, get_latest_metrics,
                         get_connection, get_cursor, get_plant_image_url)
@@ -30,32 +32,17 @@ def homepage() -> None:
 
     connection = get_connection()
     cursor = get_cursor(connection)
-    live_metrics = get_latest_metrics(cursor)
-    archival_metrics = get_archival_data(cursor)
 
-    filter_plant = get_plant_filter(list(live_metrics['plant_name']))
+    archival_metrics = get_archival_data(cursor)
+    plant_metrics = get_latest_metrics(cursor)
+    filter_plant = get_plant_filter(
+        list(plant_metrics['plant_name']))
     st.write(" ")
 
-    filtered_data = filter_by_plant(
-        filter_plant, live_metrics, archival_metrics)
-
-    display_charts(filtered_data[0], filtered_data[1], cursor)
-
-
-def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame, cursor) -> None:
-    """Function to display and format charts."""
     left, space, right = st.columns((6, 0.2, 1))
-    with left:
-        st.altair_chart(overlay_temperature_chart(data_live,
-                                                  data_archival))
-        st.write(" ")
-        st.altair_chart(overlay_soil_moisture_chart(data_live,
-                                                    data_archival))
-        st.write(" ")
-        st.altair_chart(plot_last_watered(data_live))
 
     with right:
-        table_data = get_data_plant_table(data_live)
+        table_data = get_data_plant_table(plant_metrics)
         st.write(
             table_data.style.set_table_styles([
                 {'selector': 'th', 'props': [('text-align', 'left')]},
@@ -67,9 +54,38 @@ def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame, cursor)
         st.write("")
 
         single_plant_chosen = filter_single_plant_for_image(
-            data_live['plant_name'].unique())
+            plant_metrics['plant_name'].unique())
         plant_url = get_plant_image_url(cursor, single_plant_chosen)
         display_plant_image(plant_url)
+    with space:
+        st.write("")
+    with left:
+        live_metrics = get_latest_metrics(cursor)
+        filtered_data = filter_by_plant(
+            filter_plant, live_metrics, archival_metrics)
+        display_charts(
+            filtered_data[0], filtered_data[1])
+
+        count = st_autorefresh(interval=2000, limit=200, key="refresh-counter")
+
+        if count % 30 == 0:
+            live_metrics = get_latest_metrics(cursor)
+            filtered_data = filter_by_plant(
+                filter_plant, live_metrics, archival_metrics)
+
+            display_charts(
+                filtered_data[0], filtered_data[1])
+
+
+def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame) -> None:
+    """Function to display and format charts."""
+    st.altair_chart(overlay_temperature_chart(data_live,
+                                              data_archival))
+    st.write(" ")
+    st.altair_chart(overlay_soil_moisture_chart(data_live,
+                                                data_archival))
+    st.write(" ")
+    st.altair_chart(plot_last_watered(data_live))
 
 
 def filter_single_plant_for_image(plant_names: list) -> str:
