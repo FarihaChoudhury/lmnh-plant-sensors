@@ -5,32 +5,31 @@
 <details>
   <summary>Table of Contents 📝</summary>
   <ol>
-    <li>
-      <a href="#About-The-Project-🌱">About The Project</a>
+     <li>
+      <a href="#about-the-project-">About The Project</a>
       <ul>
-        <li><a href="#Diagrams-📊">Diagrams</a></li>
-      </ul>
-      <ul>
-        <li><a href="#Built-With">Built With</a></li>
+        <li><a href="#diagrams-">Diagrams</a></li>
+        <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
     <li>
-      <a href="#🛠️-Getting-Started">Getting Started</a>
+      <a href="#-getting-started">Getting Started</a>
       <ul>
-        <li><a href="#Prerequisites">Prerequisites</a></li>
-        <li><a href="#Installation-⚙️">Installation</a></li>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation-">Installation</a></li>
       </ul>
-    <li>
-      <a href="#Requirements-📋">Requirements</a>
     </li>
     <li>
-      <a href="#Folders-Explained-📁">Folders Explained</a>
+      <a href="#-requirements">Requirements</a>
     </li>
     <li>
-      <a href="#Eiles-Explained-🗂️">Files Explained</a>
+      <a href="#-folders-explained">Folders Explained</a>
     </li>
     <li>
-      <a href="#Developers-👨🏽‍💻👩🏽‍💻">Developers</a>
+      <a href="#-files-explained">Files Explained</a>
+    </li>
+    <li>
+      <a href="#developers-">Developers</a>
     </li>
   </ol>
 </details>
