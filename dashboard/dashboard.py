@@ -1,5 +1,6 @@
 """Streamlit Dashboard for LNMH Plant Monitoring System."""
 # pylint: disable=broad-exception-caught
+# pylint: disable=no-name-in-module
 
 from os import environ
 from dotenv import load_dotenv
@@ -8,6 +9,7 @@ import streamlit as st
 import altair as alt
 from streamlit_autorefresh import st_autorefresh
 import google.generativeai as genai
+from pymssql import Cursor
 
 from db_queries import (get_archival_data, get_latest_metrics,
                         get_connection, get_cursor, get_plant_image_url)
@@ -44,7 +46,8 @@ def homepage() -> None:
     populate_columns(cursor, archival_metrics, plant_metrics, filter_plant)
 
 
-def populate_columns(cursor, archival_metrics, plant_metrics, filter_plant):
+def populate_columns(cursor: Cursor, archival_metrics: pd.DataFrame,
+                     plant_metrics: pd.DataFrame, filter_plant: list):
     """ Create and populate columns of the dashboard container. Left side contains graphs.
         Right side contains legend and plant images. """
     left, space, right = st.columns((6, 0.2, 1))
@@ -116,7 +119,7 @@ def display_plant_image(plant_url: str) -> None:
             "Ooops! No picture for this plant can be found, try a different plant!")
 
 
-def display_plant_information(single_plant_chosen):
+def display_plant_information(single_plant_chosen: str) -> None:
     """ Create gemini model and get plant facts."""
     genai.configure(api_key=environ["GEMINI_API_KEY"])
     model = genai.GenerativeModel('gemini-1.5-flash')

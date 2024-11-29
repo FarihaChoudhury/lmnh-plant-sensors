@@ -23,7 +23,12 @@
       <a href="#requirements-">Requirements</a>
     </li>
     <li>
+<<<<<<< HEAD
+    <a href="#files-explained">Folders Explained</a>
+
+=======
       <a href="#folders-explained-">Folders Explained</a>
+>>>>>>> 32e7f2b986a52f1c4be4a7c480fdcb08b3180c0d
     </li>
     <li>
       <a href="https://github.com/SurinaCS/lmnh-plant-sensors/blob/cf0a61daaeb11f05ec92ab97172d9e2ce51b836a/README.md#files-explained%EF%B8%8F">Files Explained</a>
