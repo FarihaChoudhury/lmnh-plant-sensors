@@ -91,6 +91,9 @@ def display_plant_image(plant_url: str) -> None:
             "Ooops! No picture for this plant can be found, try a different plant!")
 
 
+# def get_plant_fact
+
+
 def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
     """Create a multiselect filter based on plant names."""
     return st.multiselect(
