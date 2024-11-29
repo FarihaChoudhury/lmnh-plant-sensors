@@ -53,7 +53,7 @@ def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
         ON pm.plant_id = latest_recording_info.plant_id
             AND pm.recording_taken = latest_recording_info.latest_time
         JOIN {environ['SCHEMA_NAME']}.plant as p ON pm.plant_id = p.plant_id;
-     
+
        """
     try:
 
@@ -119,3 +119,20 @@ def get_plant_image_url(cursor: Cursor, plant_name: str) -> str:
         logging.error("Error occurred whilst fetching plant image url: %s", e)
         raise
     return result
+
+
+def get_plant_fact(model, plant_name: str) -> str:
+    """ Retrieves a fact about a chosen plant based on the plant name. """
+
+    fun_fact = model.generate_content(
+        f"A fun fact about {plant_name}, write a full sentence.").to_dict()
+
+    return fun_fact['candidates'][0]['content']['parts'][0]['text']
+
+
+def get_plant_countries(model, plant_name: str) -> str:
+    """ Retrieves a fact about a chosen plant based on the plant name. """
+    countries = model.generate_content(
+        f"What is the native range of {plant_name} plant?").to_dict()
+
+    return countries['candidates'][0]['content']['parts'][0]['text']

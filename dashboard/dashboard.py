@@ -12,7 +12,8 @@ import google.generativeai as genai
 from pymssql import Cursor
 
 from db_queries import (get_archival_data, get_latest_metrics,
-                        get_connection, get_cursor, get_plant_image_url)
+                        get_connection, get_cursor, get_plant_image_url,
+                        get_plant_countries, get_plant_fact)
 
 COLOUR_PALETTE = ["#84b067", "#a7de83", "#4b633b", "#2c3b23"]
 
@@ -113,33 +114,16 @@ def display_plant_image(plant_url: str) -> None:
 
 def display_plant_information(single_plant_chosen: str) -> None:
     """ Create gemini model and get plant facts."""
-    genai.configure(api_key=environ["GEMINI_API_KEY"])
-    model = genai.GenerativeModel('gemini-1.5-flash')
 
     st.write("Fun Fact:")
     try:
+        genai.configure(api_key=environ["GEMINI_API_KEY"])
+        model = genai.GenerativeModel('gemini-1.5-flash')
         st.write(get_plant_fact(model, single_plant_chosen))
         st.write(get_plant_countries(model, single_plant_chosen))
     except Exception:
         st.write(
             "🪴 Oops you're going a bit fast with the plant searches! Try again in a minute...")
-
-
-def get_plant_fact(model, plant_name: str) -> str:
-    """ Retrieves a fact about a chosen plant based on the plant name. """
-
-    fun_fact = model.generate_content(
-        f"A fun fact about {plant_name}, write a full sentence.").to_dict()
-
-    return fun_fact['candidates'][0]['content']['parts'][0]['text']
-
-
-def get_plant_countries(model, plant_name: str) -> str:
-    """ Retrieves a fact about a chosen plant based on the plant name. """
-    countries = model.generate_content(
-        f"What is the native range of {plant_name} plant?").to_dict()
-
-    return countries['candidates'][0]['content']['parts'][0]['text']
 
 
 def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:

@@ -1,4 +1,4 @@
-"""Test file for queries.py"""
+"""Test file for the db_queries.py which queries the database for dashboard"""
 # pylint: skip-file
 from os import environ
 import pandas as pd
@@ -8,7 +8,8 @@ from unittest.mock import Mock, MagicMock, patch
 from pymssql import exceptions
 
 from db_queries import (get_connection, get_cursor,
-                        get_archival_data, get_latest_metrics, get_plant_image_url)
+                        get_archival_data, get_latest_metrics, get_plant_image_url,
+                        get_plant_countries, get_plant_fact)
 
 
 class TestingDBQueries:
@@ -347,3 +348,41 @@ class TestingDBQueries:
             assert "Error occurred whilst fetching plant image url" in caplog.text
             mock_cursor.execute.assert_called_once()
             mock_cursor.fetchall.assert_not_called()
+
+
+class TestingGenAIResponses:
+    """"Test Class for the functions that interact with GenAI."""
+
+    def test_get_plant_fact_successful(self):
+        """Test that the plant fact retrieval is successful."""
+
+        mock_model = MagicMock()
+        fake_return_value = {
+            'candidates': [
+                {'content': {
+                    'parts': [{'text': 'Sunflowers can grow up to 12 feet tall!'}]}}
+            ]
+        }
+        mock_model.generate_content.return_value.to_dict.return_value = fake_return_value
+        plant_name = "sunflower"
+        plant_fact = 'Sunflowers can grow up to 12 feet tall!'
+        response = get_plant_fact(mock_model, plant_name)
+
+        assert response == plant_fact
+
+    def test_get_plant_countries_successful(self):
+        """Test that the plant countries retrieval is successful."""
+
+        mock_model = MagicMock()
+        fake_return_value = {
+            'candidates': [
+                {'content': {
+                    'parts': [{'text': 'Sunflowers are native to North and Central America.'}]}}
+            ]
+        }
+        mock_model.generate_content.return_value.to_dict.return_value = fake_return_value
+        plant_name = "sunflower"
+        plant_fact = 'Sunflowers are native to North and Central America.'
+        response = get_plant_countries(mock_model, plant_name)
+
+        assert response == plant_fact
