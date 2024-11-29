@@ -70,15 +70,8 @@ def populate_columns(cursor, archival_metrics, plant_metrics, filter_plant):
     with left:
         count = st_autorefresh(interval=60000, limit=200,
                                key="refresh-counter")
-        if count % 30 == 0:
-            live_metrics = get_latest_metrics(cursor)
-            filtered_data = filter_by_plant(
-                filter_plant, live_metrics, archival_metrics)
-            display_charts(
-                filtered_data[0], filtered_data[1])
-
-        else:
-            live_metrics = get_latest_metrics(cursor)
+       
+       live_metrics = get_latest_metrics(cursor)
             filtered_data = filter_by_plant(
                 filter_plant, live_metrics, archival_metrics)
 
