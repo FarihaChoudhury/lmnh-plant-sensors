@@ -3,3 +3,4 @@ pymssql
 pandas
 streamlit
 altair
+streamlit-autorefresh
