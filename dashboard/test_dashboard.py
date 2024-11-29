@@ -12,13 +12,6 @@ from dashboard import (
 class TestingDashboardFunctions:
     """Test Class for non-streamlit dashboard functions."""
 
-    # @pytest.fixture
-    # def sample_input_data(self):
-    #     """Sample input data for tests."""
-    #     return pd.DataFrame({
-    #         'plant_id': [1, 2, 3],
-    #         'plant_name': ['Fern', 'Cactus', 'Bamboo']
-    #     })
 
     def test_filter_with_selected_plants(self):
         """Test filtering selected plants works as expected."""
