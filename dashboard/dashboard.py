@@ -71,15 +71,14 @@ def populate_columns(cursor: Cursor, archival_metrics: pd.DataFrame,
     with space:
         st.write("")
     with left:
-        count = st_autorefresh(interval=60000, limit=200,
-                               key="refresh-counter")
-       
-       live_metrics = get_latest_metrics(cursor)
-            filtered_data = filter_by_plant(
-                filter_plant, live_metrics, archival_metrics)
+        st_autorefresh(interval=60000, limit=200, key="refresh-counter")
 
-            display_charts(
-                filtered_data[0], filtered_data[1])
+        live_metrics = get_latest_metrics(cursor)
+        filtered_data = filter_by_plant(
+            filter_plant, live_metrics, archival_metrics)
+
+        display_charts(
+            filtered_data[0], filtered_data[1])
 
 
 def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame) -> None:
