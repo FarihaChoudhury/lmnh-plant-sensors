@@ -44,7 +44,21 @@ pip3 install -r requirements.txt
 
 ## Secrets Management 🕵🏽‍♂️
 
-‼️ **Same `.env` file and secrets as pipeline** ‼️
+Before running the script, you need to set up your AWS credentials. Create a new file called `.env` in the `dashboard` directory and add the following lines, with your actual AWS keys and database details:
+
+| Variable         | Description                                      |
+|------------------|--------------------------------------------------|
+| DB_HOST          | The hostname or IP address of the database.      |
+| DB_PORT          | The port number for the database connection.     |
+| DB_PASSWORD      | The password for the database user.              |
+| DB_USER          | The username for the database.                   |
+| DB_NAME          | The name of the database.                        |
+| SCHEMA_NAME      | The name of the database schema.                 |
+| GEMINI_API_KEY   | The Google Gemini API key.                       |
+
+
+You'll need to register with the Google Gemini Api and create an API KEY to include in your `.env` file.
+
 
 ## AWS Setup and Docker Instructions ⚙️
 

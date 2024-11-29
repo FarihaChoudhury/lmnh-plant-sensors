@@ -1,7 +1,7 @@
 """Streamlit Dashboard for LNMH Plant Monitoring System."""
 
 from dotenv import load_dotenv
-import os as environ
+from os import environ
 import pandas as pd
 import streamlit as st
 import altair as alt
@@ -97,9 +97,8 @@ def display_plant_image(plant_url: str) -> None:
 
 def display_plant_information(single_plant_chosen):
     """ Create gemini model and get plant facts."""
-    genai.configure(api_key="AIzaSyB016P3WiMFT_A7poTaxZhxyxF45SnVRCk")
+    genai.configure(api_key=environ["GEMINI_API_KEY"])
     model = genai.GenerativeModel('gemini-1.5-flash')
-    # chat = model.start_chat(history=[])
 
     st.write("Fun Fact:")
     st.write(get_plant_fact(model, single_plant_chosen))
