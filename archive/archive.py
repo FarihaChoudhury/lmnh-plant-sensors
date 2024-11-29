@@ -141,6 +141,3 @@ def lambda_handler(event, context) -> None:
             "statusCode": 500,
             "body": f"An unexpected error occurred: {e}"
         }
-
-
-lambda_handler(None, None)
