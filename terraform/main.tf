@@ -356,6 +356,10 @@ resource "aws_ecs_task_definition" "c14-runtime-terrors-plants-dashboard-ECS-tas
                 {
                     "name": "SCHEMA_NAME",
                     "value": var.SCHEMA_NAME
+                },
+                {
+                  "name": "GEMINI_API_KEY",
+                  "value": var.GEMINI_API_KEY
                 }
             ]
             logConfiguration = {
