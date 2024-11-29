@@ -5,7 +5,7 @@
 <details>
   <summary>Table of Contents 📝</summary>
   <ol>
-     <li>
+    <li>
       <a href="#about-the-project-">About The Project</a>
       <ul>
         <li><a href="#diagrams-">Diagrams</a></li>
@@ -14,8 +14,11 @@
     </li>
     <li>
       <a href="#getting-started-">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation-">Installation</a></li>
+      </ul>
     </li>
-    <li><a href="#installation-">Installation</a></li>
     <li>
       <a href="#requirements-">Requirements</a>
     </li>
@@ -53,11 +56,11 @@ Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors
 
 
 ## Getting Started 🛠️ 
-Prerequisites:
+### Prerequisites:
 - Python 3.10 must be installed with pip3 for dependency installation.  
 
 
-## Installation ⚙️
+### Installation ⚙️
 These instructions are for **macOS only**.
 
 1. **Clone the repository to your local machine using the following command**:
