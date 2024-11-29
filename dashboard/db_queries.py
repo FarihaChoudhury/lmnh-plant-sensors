@@ -7,6 +7,7 @@ import logging
 import pandas as pd
 from pymssql import connect, Connection, exceptions, Cursor
 
+
 def get_connection() -> Connection:
     """Connects to Microsoft SQL Server Database"""
 
@@ -64,13 +65,13 @@ def get_archival_data(cursor: Cursor) -> pd.DataFrame:
     """Function gets archival data including averages of temperature, soil_moisture."""
 
     query = f"""
-        SELECT 
-            ROUND(pa.avg_temperature, 2) AS avg_temperature, 
-            ROUND(pa.avg_soil_moisture, 2) as avg_soil_moisture, 
-            p.plant_name, 
+        SELECT
+            ROUND(pa.avg_temperature, 2) AS avg_temperature,
+            ROUND(pa.avg_soil_moisture, 2) as avg_soil_moisture,
+            p.plant_name,
             p.plant_id
         FROM {environ['SCHEMA_NAME']}.Plants_archive as pa
-         JOIN (SELECT plant_id,
+        JOIN (SELECT plant_id,
             MAX(last_recorded) as latest_time
             FROM {environ['SCHEMA_NAME']}.Plants_archive
             GROUP BY plant_id) as last_recording
@@ -82,3 +83,14 @@ def get_archival_data(cursor: Cursor) -> pd.DataFrame:
     result = cursor.fetchall()
 
     return pd.DataFrame(result)
+
+
+def get_plant_image_url(cursor: Cursor, plant_name: str) -> str:
+    """Extracts the plant image url for a plant by its name."""
+    query = """ SELECT image_url 
+                FROM epsilon.plant 
+                WHERE plant_name = %s;"""
+    cursor.execute(query, (plant_name,))
+    result = cursor.fetchone()
+
+    return result

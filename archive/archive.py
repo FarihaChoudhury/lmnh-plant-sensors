@@ -75,6 +75,7 @@ def upload_plant_metric_data(conn: Connection, plant_details: dict) -> None:
     with conn.cursor() as cur:
         cur.execute(query, (avg_temp, avg_soil_moist,
                     watered_count, last_recorded, plant_id))
+        conn.commit()
 
     logging.info("Completed inserting to archive")
 
@@ -114,6 +115,7 @@ def clear_plant_metrics(conn: Connection) -> None:
     query = "TRUNCATE TABLE epsilon.plant_metric;"
     with conn.cursor() as cur:
         cur.execute(query)
+        conn.commit()
 
 
 def lambda_handler(event, context) -> None:
@@ -139,3 +141,6 @@ def lambda_handler(event, context) -> None:
             "statusCode": 500,
             "body": f"An unexpected error occurred: {e}"
         }
+
+
+lambda_handler(None, None)
