@@ -48,15 +48,6 @@ def homepage() -> None:
 def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame, cursor) -> None:
     """Function to display and format charts."""
     left, space, right = st.columns((6, 0.2, 1))
-    with left:
-        st.altair_chart(overlay_temperature_chart(data_live,
-                                                  data_archival))
-        st.write(" ")
-        st.altair_chart(overlay_soil_moisture_chart(data_live,
-                                                    data_archival))
-        st.write(" ")
-        st.altair_chart(plot_last_watered(data_live))
-
     with right:
         table_data = get_data_plant_table(data_live)
         st.write(
@@ -74,6 +65,15 @@ def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame, cursor)
         plant_url = get_plant_image_url(cursor, single_plant_chosen)
         display_plant_image(plant_url)
         display_plant_information(single_plant_chosen)
+
+    with left:
+        st.altair_chart(overlay_temperature_chart(data_live,
+                                                  data_archival))
+        st.write(" ")
+        st.altair_chart(overlay_soil_moisture_chart(data_live,
+                                                    data_archival))
+        st.write(" ")
+        st.altair_chart(plot_last_watered(data_live))
 
 
 def filter_single_plant_for_image(plant_names: list) -> str:
@@ -98,31 +98,27 @@ def display_plant_image(plant_url: str) -> None:
 def display_plant_information(single_plant_chosen):
     """ Create gemini model and get plant facts."""
     genai.configure(api_key="AIzaSyB016P3WiMFT_A7poTaxZhxyxF45SnVRCk")
-    model = genai.GenerativeModel("gemini-pro")
+    model = genai.GenerativeModel('gemini-1.5-flash')
     # chat = model.start_chat(history=[])
 
     st.write("Fun Fact:")
     st.write(get_plant_fact(model, single_plant_chosen))
-    st.write("They're commonly found in:")
     st.write(get_plant_countries(model, single_plant_chosen))
 
 
 def get_plant_fact(model, plant_name: str) -> str:
     """ Retrieves a fact about a chosen plant based on the plant name. """
-    chat = model.start_chat(history=[])
-    fun_fact = chat.send_message(
-        f"A fun fact about {plant_name}, write a full sentence.", stream=True).to_dict()
+
+    fun_fact = model.generate_content(
+        f"A fun fact about {plant_name}, write a full sentence.").to_dict()
 
     return fun_fact['candidates'][0]['content']['parts'][0]['text']
 
 
 def get_plant_countries(model, plant_name: str) -> str:
     """ Retrieves a fact about a chosen plant based on the plant name. """
-    chat = model.start_chat(history=[])
-    countries = chat.send_message(
-        f"What countries is {plant_name} plant common in?", stream=True).to_dict()
-
-    print(countries)
+    countries = model.generate_content(
+        f"What is the native range of {plant_name} plant?").to_dict()
 
     return countries['candidates'][0]['content']['parts'][0]['text']
 
