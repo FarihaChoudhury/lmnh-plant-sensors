@@ -213,7 +213,7 @@ def plot_last_watered(data: pd.DataFrame) -> alt.Chart:
             "last_watered:T",
             legend=None,
             scale=alt.Scale(
-                range=COLOUR_PALETTE,
+                range=["#FF5733", "#33FF57", "#57FF33"],
                 domain=[data["last_watered"].min(
                 ), data["last_watered"].max()]
             )
