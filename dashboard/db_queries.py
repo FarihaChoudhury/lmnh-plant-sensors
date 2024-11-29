@@ -4,7 +4,7 @@
 from os import environ
 import logging
 import pandas as pd
-from pymssql import connect, Connection, exceptions, Cursor, exceptions
+from pymssql import connect, Connection, exceptions, Cursor
 
 
 def get_connection() -> Connection:
@@ -60,7 +60,8 @@ def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
         cursor.execute(query)
         result = cursor.fetchall()
     except exceptions.OperationalError as e:
-        logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
+        logging.error(
+            "Operational error occurred connecting whilst fetching live metrics: %s", e)
         raise
     except Exception as e:
         logging.error("Error occurred whilst fetching live metrics: %s", e)
@@ -91,19 +92,19 @@ def get_archival_data(cursor: Cursor) -> pd.DataFrame:
         cursor.execute(query)
         result = cursor.fetchall()
     except exceptions.OperationalError as e:
-        logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
+        logging.error(
+            "Operational error occurred connecting whilst fetching live metrics: %s", e)
         raise
     except Exception as e:
         logging.error("Error occurred whilst fetching archival metrics: %s", e)
         raise
 
-
     return pd.DataFrame(result)
 
-  
+
 def get_plant_image_url(cursor: Cursor, plant_name: str) -> str:
     """Extracts the plant image url for a plant by its name."""
-    query = """ SELECT image_url 
+    query = """ SELECT image_url
                 FROM epsilon.plant 
                 WHERE plant_name = %s;"""
 
@@ -111,7 +112,8 @@ def get_plant_image_url(cursor: Cursor, plant_name: str) -> str:
         cursor.execute(query, (plant_name,))
         result = cursor.fetchone()
     except exceptions.OperationalError as e:
-        logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
+        logging.error(
+            "Operational error occurred connecting whilst fetching live metrics: %s", e)
         raise
     except Exception as e:
         logging.error("Error occurred whilst fetching plant image url: %s", e)

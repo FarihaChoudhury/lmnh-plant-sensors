@@ -1,6 +1,6 @@
 """Streamlit Dashboard for LNMH Plant Monitoring System."""
+# pylint: disable=broad-exception-caught
 
-import time
 from os import environ
 from dotenv import load_dotenv
 import pandas as pd
@@ -41,8 +41,13 @@ def homepage() -> None:
         list(plant_metrics['plant_name']))
     st.write(" ")
 
-    left, space, right = st.columns((6, 0.2, 1))
+    populate_columns(cursor, archival_metrics, plant_metrics, filter_plant)
 
+
+def populate_columns(cursor, archival_metrics, plant_metrics, filter_plant):
+    """ Create and populate columns of the dashboard container. Left side contains graphs.
+        Right side contains legend and plant images. """
+    left, space, right = st.columns((6, 0.2, 1))
     with right:
         table_data = get_data_plant_table(plant_metrics)
         st.write(
@@ -72,7 +77,6 @@ def homepage() -> None:
             display_charts(
                 filtered_data[0], filtered_data[1])
 
-        # if count % 30 == 0:
         else:
             live_metrics = get_latest_metrics(cursor)
             filtered_data = filter_by_plant(
@@ -118,8 +122,12 @@ def display_plant_information(single_plant_chosen):
     model = genai.GenerativeModel('gemini-1.5-flash')
 
     st.write("Fun Fact:")
-    st.write(get_plant_fact(model, single_plant_chosen))
-    st.write(get_plant_countries(model, single_plant_chosen))
+    try:
+        st.write(get_plant_fact(model, single_plant_chosen))
+        st.write(get_plant_countries(model, single_plant_chosen))
+    except Exception:
+        st.write(
+            "🪴 Oops you're going a bit fast with the plant searches! Try again in a minute...")
 
 
 def get_plant_fact(model, plant_name: str) -> str:
