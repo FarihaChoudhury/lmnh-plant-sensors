@@ -21,6 +21,7 @@ To run this script and containerize into a docker image, you will need the follo
 - `streamlit`: For creating an interactive web application for visualisations
 - `altair`: For creating declarative statistical visualisations
 - `streamlit-autorefresh`: For realtime updates of the graphs.
+- `google-generativeai`: For interacting with Google Gemini API.
 
 To make `pymsql` work, make sure you have the following:
 

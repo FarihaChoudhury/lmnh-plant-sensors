@@ -11,3 +11,5 @@ pytest-asyncio
 pylint
 streamlit
 altair
+google-generativeai
+streamlit-autorefresh

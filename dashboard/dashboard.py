@@ -1,11 +1,13 @@
 """Streamlit Dashboard for LNMH Plant Monitoring System."""
 
 import time
+from os import environ
 from dotenv import load_dotenv
 import pandas as pd
 import streamlit as st
 import altair as alt
 from streamlit_autorefresh import st_autorefresh
+import google.generativeai as genai
 
 from db_queries import (get_archival_data, get_latest_metrics,
                         get_connection, get_cursor, get_plant_image_url)
@@ -57,18 +59,21 @@ def homepage() -> None:
             plant_metrics['plant_name'].unique())
         plant_url = get_plant_image_url(cursor, single_plant_chosen)
         display_plant_image(plant_url)
+        display_plant_information(single_plant_chosen)
     with space:
         st.write("")
     with left:
-        live_metrics = get_latest_metrics(cursor)
-        filtered_data = filter_by_plant(
-            filter_plant, live_metrics, archival_metrics)
-        display_charts(
-            filtered_data[0], filtered_data[1])
-
-        count = st_autorefresh(interval=2000, limit=200, key="refresh-counter")
-
+        count = st_autorefresh(interval=60000, limit=200,
+                               key="refresh-counter")
         if count % 30 == 0:
+            live_metrics = get_latest_metrics(cursor)
+            filtered_data = filter_by_plant(
+                filter_plant, live_metrics, archival_metrics)
+            display_charts(
+                filtered_data[0], filtered_data[1])
+
+        # if count % 30 == 0:
+        else:
             live_metrics = get_latest_metrics(cursor)
             filtered_data = filter_by_plant(
                 filter_plant, live_metrics, archival_metrics)
@@ -105,6 +110,33 @@ def display_plant_image(plant_url: str) -> None:
     else:
         st.write(
             "Ooops! No picture for this plant can be found, try a different plant!")
+
+
+def display_plant_information(single_plant_chosen):
+    """ Create gemini model and get plant facts."""
+    genai.configure(api_key=environ["GEMINI_API_KEY"])
+    model = genai.GenerativeModel('gemini-1.5-flash')
+
+    st.write("Fun Fact:")
+    st.write(get_plant_fact(model, single_plant_chosen))
+    st.write(get_plant_countries(model, single_plant_chosen))
+
+
+def get_plant_fact(model, plant_name: str) -> str:
+    """ Retrieves a fact about a chosen plant based on the plant name. """
+
+    fun_fact = model.generate_content(
+        f"A fun fact about {plant_name}, write a full sentence.").to_dict()
+
+    return fun_fact['candidates'][0]['content']['parts'][0]['text']
+
+
+def get_plant_countries(model, plant_name: str) -> str:
+    """ Retrieves a fact about a chosen plant based on the plant name. """
+    countries = model.generate_content(
+        f"What is the native range of {plant_name} plant?").to_dict()
+
+    return countries['candidates'][0]['content']['parts'][0]['text']
 
 
 def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
