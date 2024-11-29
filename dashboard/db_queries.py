@@ -1,11 +1,10 @@
-
 """db_queries.py: data retrieval for dashboard visualisations."""
 # pylint: disable = no-name-in-module
 
 from os import environ
 import logging
 import pandas as pd
-from pymssql import connect, Connection, exceptions, Cursor
+from pymssql import connect, Connection, exceptions, Cursor, exceptions
 
 
 def get_connection() -> Connection:
@@ -54,9 +53,18 @@ def get_latest_metrics(cursor: Cursor) -> pd.DataFrame:
         ON pm.plant_id = latest_recording_info.plant_id
             AND pm.recording_taken = latest_recording_info.latest_time
         JOIN {environ['SCHEMA_NAME']}.plant as p ON pm.plant_id = p.plant_id;
-        """
-    cursor.execute(query)
-    result = cursor.fetchall()
+     
+       """
+    try:
+
+        cursor.execute(query)
+        result = cursor.fetchall()
+    except exceptions.OperationalError as e:
+        logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
+        raise
+    except Exception as e:
+        logging.error("Error occurred whilst fetching live metrics: %s", e)
+        raise
 
     return pd.DataFrame(result)
 
@@ -79,18 +87,33 @@ def get_archival_data(cursor: Cursor) -> pd.DataFrame:
         JOIN {environ['SCHEMA_NAME']}.plant as p
             ON pa.plant_id = p.plant_id;
         """
-    cursor.execute(query)
-    result = cursor.fetchall()
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+    except exceptions.OperationalError as e:
+        logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
+        raise
+    except Exception as e:
+        logging.error("Error occurred whilst fetching archival metrics: %s", e)
+        raise
+
 
     return pd.DataFrame(result)
 
-
+  
 def get_plant_image_url(cursor: Cursor, plant_name: str) -> str:
     """Extracts the plant image url for a plant by its name."""
     query = """ SELECT image_url 
                 FROM epsilon.plant 
                 WHERE plant_name = %s;"""
-    cursor.execute(query, (plant_name,))
-    result = cursor.fetchone()
 
+    try:
+        cursor.execute(query, (plant_name,))
+        result = cursor.fetchone()
+    except exceptions.OperationalError as e:
+        logging.error("Error connecting or general operation issues whilst fetching live metrics: %s", e)
+        raise
+    except Exception as e:
+        logging.error("Error occurred whilst fetching plant image url: %s", e)
+        raise
     return result
