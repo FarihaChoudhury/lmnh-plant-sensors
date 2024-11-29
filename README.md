@@ -13,20 +13,19 @@
       </ul>
     </li>
     <li>
-      <a href="#-getting-started">Getting Started</a>
+      <a href="#getting-started-">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation-">Installation</a></li>
       </ul>
     </li>
     <li>
-      <a href="#-requirements">Requirements</a>
+      <a href="#requirements-">Requirements</a>
     </li>
     <li>
-      <a href="#-folders-explained">Folders Explained</a>
+      <a href="#folders-explained-">Folders Explained</a>
     </li>
     <li>
-      <a href="#-files-explained">Files Explained</a>
+      <a href="#files-explained-">Files Explained</a>
     </li>
     <li>
       <a href="#developers-">Developers</a>
@@ -55,7 +54,7 @@ Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors
  [![Python][Python.com]][Python-url]
 
 
-## 🛠️ Getting Started
+## Getting Started 🛠️ 
 Prerequisites:
 - Python 3.10 must be installed with pip3 for dependency installation.  
 
