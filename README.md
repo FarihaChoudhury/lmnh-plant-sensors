@@ -13,7 +13,7 @@
       </ul>
     </li>
     <li>
-      <a href="#getting-started-">Getting Started</a>
+      <a href="https://github.com/SurinaCS/lmnh-plant-sensors/blob/cf0a61daaeb11f05ec92ab97172d9e2ce51b836a/README.md#getting-started-%EF%B8%8F">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
@@ -26,7 +26,7 @@
       <a href="#folders-explained-">Folders Explained</a>
     </li>
     <li>
-      <a href="#files-explained-">Files Explained</a>
+      <a href="https://github.com/SurinaCS/lmnh-plant-sensors/blob/cf0a61daaeb11f05ec92ab97172d9e2ce51b836a/README.md#files-explained%EF%B8%8F">Files Explained</a>
     </li>
     <li>
       <a href="#developers-">Developers</a>
