@@ -1,6 +1,6 @@
-# Liverpool Natural History Museum: Plant Health Monitoring System
 ![Pylint Score](.github/badges/pylint.svg)  
 ![Pytest Score](.github/badges/test.svg)
+# Liverpool Natural History Museum: Plant Health Monitoring System
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -49,6 +49,10 @@ Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors
 #### ERD Diagram
 
 ![ERD Diagram](/images/ERD-diagram.png)
+
+#### Dashboard Wireframe
+
+![Dashboard Wireframe](/images/wireframe.png)
 
 ### Built With
  [![Python][Python.com]][Python-url]

@@ -1,5 +1,5 @@
-"""Tests for extract.py"""
-#  pylint: skip-file
+"""Test file for extracting plant data"""
+# pylint: skip-file
 
 import pytest
 from unittest.mock import patch, mock_open, AsyncMock
@@ -15,6 +15,8 @@ from extract import (extract_botanist_information,
 
 
 class TestExtractPlantInformation():
+    """ Test class containing extract tests """
+
     @pytest.fixture
     def sample_api_information(self):
         return {
@@ -93,9 +95,10 @@ class TestExtractPlantInformation():
         """" Tests extracts plant metrics information correctly """
         input_data = {"plant_id": 1, "name": "Test Test",
                       "scientific_name": ["Test Test"]}
-        output_data = {"plant_id": 1, "name": "Test Test",
+        output_data = {'image_url': 'None', "plant_id": 1, "name": "Test Test",
                        "scientific_name": "Test Test"}
         result = await extract_plant_information(input_data)
+        print(result)
         assert result == output_data
 
     @pytest.mark.asyncio
@@ -103,7 +106,7 @@ class TestExtractPlantInformation():
         """" Tests extracts plant metrics information and sets scientific name
             to None if none were given. """
         input_data = {"plant_id": 1, "name": "Test Test"}
-        output_data = {"plant_id": 1, "name": "Test Test",
+        output_data = {'image_url': 'None', "plant_id": 1, "name": "Test Test",
                        "scientific_name": "None"}
         result = await extract_plant_information(input_data)
         assert result == output_data

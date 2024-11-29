@@ -1,15 +1,12 @@
 """Streamlit Dashboard for LNMH Plant Monitoring System."""
 
-from os import environ
-import logging
 from dotenv import load_dotenv
 import pandas as pd
 import streamlit as st
 import altair as alt
-from pymssql import connect, Connection, exceptions, Cursor
 
 from db_queries import (get_archival_data, get_latest_metrics,
-                        get_connection, get_cursor)
+                        get_connection, get_cursor, get_plant_image_url)
 
 COLOUR_PALETTE = ["#84b067", "#a7de83", "#4b633b", "#2c3b23"]
 
@@ -24,7 +21,8 @@ def homepage() -> None:
         st.title("🌱🌵🍄")
     with title:
         st.markdown(
-            "<h1 style='text-align: center;'>LNMH Plant Monitoring System</h1>", unsafe_allow_html=True)
+            "<h1 style='text-align: center;'>LNMH Plant Monitoring System</h1>",
+            unsafe_allow_html=True)
 
     with emoji_right:
         st.markdown("<h1 style='text-align: right;'>🍄🌵🌱</h1>",
@@ -41,16 +39,22 @@ def homepage() -> None:
     filtered_data = filter_by_plant(
         filter_plant, live_metrics, archival_metrics)
 
-    display_charts(filtered_data[0], filtered_data[1])
+    display_charts(filtered_data[0], filtered_data[1], cursor)
 
 
-def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame) -> None:
+def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame, cursor) -> None:
     """Function to display and format charts."""
-    temp, name_id = st.columns((6, 1))
-    with temp:
+    left, space, right = st.columns((6, 0.2, 1))
+    with left:
         st.altair_chart(overlay_temperature_chart(data_live,
                                                   data_archival))
-    with name_id:
+        st.write(" ")
+        st.altair_chart(overlay_soil_moisture_chart(data_live,
+                                                    data_archival))
+        st.write(" ")
+        st.altair_chart(plot_last_watered(data_live))
+
+    with right:
         table_data = get_data_plant_table(data_live)
         st.write(
             table_data.style.set_table_styles([
@@ -59,12 +63,32 @@ def display_charts(data_live: pd.DataFrame, data_archival: pd.DataFrame) -> None
                 {'selector': 'col1', 'props': [('width', '200px')]}
             ])
         )
-    st.write(" ")
+        st.write("")
+        st.write("")
 
-    st.altair_chart(overlay_soil_moisture_chart(data_live,
-                                                data_archival))
+        single_plant_chosen = filter_single_plant_for_image(
+            data_live['plant_name'].unique())
+        plant_url = get_plant_image_url(cursor, single_plant_chosen)
+        display_plant_image(plant_url)
 
-    st.altair_chart(plot_last_watered(data_live))
+
+def filter_single_plant_for_image(plant_names: list) -> str:
+    """Filter for one plant to display image for"""
+    return st.selectbox(
+        "Choose a plant to view! 🌷",
+        options=plant_names,
+        key="plant_dropdown"
+    )
+
+
+def display_plant_image(plant_url: str) -> None:
+    """Displays a plant image by its url if it exists in database."""
+    if plant_url:
+        st.image(plant_url['image_url'],
+                 use_container_width=True, width=500)
+    else:
+        st.write(
+            "Ooops! No picture for this plant can be found, try a different plant!")
 
 
 def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
@@ -77,7 +101,8 @@ def get_plant_filter(plant_names: list, key: str = "plant_filter") -> list:
     )
 
 
-def filter_by_plant(selected_plants: list, plant_metrics: pd.DataFrame, archive_plants: pd.DataFrame) -> list:
+def filter_by_plant(selected_plants: list, plant_metrics: pd.DataFrame,
+                    archive_plants: pd.DataFrame) -> list:
     """Filter visualizations based on selected plant names."""
     if selected_plants:
         return [plant_metrics[plant_metrics['plant_name'].isin(selected_plants)],
