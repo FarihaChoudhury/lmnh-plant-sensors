@@ -55,10 +55,9 @@ Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors
  [![Python][Python.com]][Python-url]
 
 
-## Getting Started 🛠️ 
+## Getting Started 🛠️
 ### Prerequisites:
 - Python 3.10 must be installed with pip3 for dependency installation.  
-
 
 ### Installation ⚙️
 These instructions are for **macOS only**.
