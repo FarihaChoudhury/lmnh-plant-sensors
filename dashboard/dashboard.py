@@ -66,7 +66,7 @@ def homepage() -> None:
         display_charts(
             filtered_data[0], filtered_data[1])
 
-        count = st_autorefresh(interval=2000, limit=200, key="fizzbuzzcounter")
+        count = st_autorefresh(interval=2000, limit=200, key="refresh-counter")
 
         if count % 30 == 0:
             live_metrics = get_latest_metrics(cursor)
