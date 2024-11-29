@@ -131,7 +131,7 @@ These folders are found this repository:
   This folder contains the infrastructure-as-code (IaC) setup using Terraform. It includes the configuration files to provision and manage cloud resources, required for the Plant Health Monitoring System. These resources are essential for setting up the cloud environment that supports the ETL pipeline and real-time dashboard.
 
 
-## Files Explained 🗂️
+## Files Explained🗂️
 These files are found in this repository:
 - **README.md**  
   This is the file you are currently reading, containing information about each file.   
