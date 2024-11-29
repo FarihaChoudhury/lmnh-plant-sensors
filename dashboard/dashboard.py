@@ -259,22 +259,12 @@ def get_data_plant_table(data: dict) -> pd.DataFrame:
 def plot_last_watered(data: pd.DataFrame) -> alt.Chart:
     """Function to create a plot showing when each plant was last watered."""
     data = link_plant_name_id(data)
-    chart = alt.Chart(data, title="Last Watered").mark_point().encode(
+    chart = alt.Chart(data, title="Last Watered").mark_point(color="#67A9B0", filled=True, size=65).encode(
         x=alt.X(
             "plant_id:N",
             title="Plant ID"),
         y=alt.Y(
-            "last_watered:T",
-            title="Last Watered At"),
-        color=alt.Color(
-            "last_watered:T",
-            legend=None,
-            scale=alt.Scale(
-                range=["#FF5733", "#33FF57", "#57FF33"],
-                domain=[data["last_watered"].min(
-                ), data["last_watered"].max()]
-            )
-        ),
+            "last_watered:T"),
         tooltip=[alt.Tooltip("last_watered:T", title="Last Watered At"),
                  alt.Tooltip("plant_id_name:N", title="Plant Name (ID)")]
     ).configure_axis(
