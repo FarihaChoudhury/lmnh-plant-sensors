@@ -59,7 +59,7 @@ Prerequisites:
 - Python 3.10 must be installed with pip3 for dependency installation.  
 
 
-## Installation ⚙️
+### Installation ⚙️
 These instructions are for **macOS only**.
 
 1. **Clone the repository to your local machine using the following command**:
