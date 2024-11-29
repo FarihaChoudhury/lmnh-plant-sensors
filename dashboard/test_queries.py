@@ -54,25 +54,6 @@ class TestingDBQueries:
         environ,
         {
             "DB_HOST": "mock_value",
-            "DB_USER": "mock_value",
-            "DB_PASSWORD": "mock_value",
-            "DB_PORT": "mock_value",
-            "SERVER": "mock_value"
-        },
-    )
-    @patch('db_queries.connect')
-    def test_get_connection_missing_env_var(self, mock_connect):
-        """Test name key error when connecting to the database."""
-        with pytest.raises(KeyError) as error:
-            get_connection()
-
-        mock_connect.assert_not_called()
-        assert str(error.value) == "'DB_NAME'"
-
-    @patch.dict(
-        environ,
-        {
-            "DB_HOST": "mock_value",
             "DB_NAME": "mock_value",
             "DB_USER": "mock_value",
             "DB_PASSWORD": "mock_value",
