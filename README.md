@@ -1,4 +1,4 @@
-![Pylint Score](.github/badges/pylint.svg)  
+![Pylint Score](.github/badges/pylint.svg)
 ![Pytest Score](.github/badges/test.svg)
 # Liverpool Natural History Museum: Plant Health Monitoring System
 
@@ -23,12 +23,7 @@
       <a href="#requirements-">Requirements</a>
     </li>
     <li>
-<<<<<<< HEAD
-    <a href="#files-explained">Folders Explained</a>
-
-=======
       <a href="#folders-explained-">Folders Explained</a>
->>>>>>> 32e7f2b986a52f1c4be4a7c480fdcb08b3180c0d
     </li>
     <li>
       <a href="https://github.com/SurinaCS/lmnh-plant-sensors/blob/cf0a61daaeb11f05ec92ab97172d9e2ce51b836a/README.md#files-explained%EF%B8%8F">Files Explained</a>
@@ -41,6 +36,13 @@
 
 ## About the Project 🌱
 Liverpool Natural History Museum (LNMH) employs an array of Raspberry Pi sensors to monitor critical plant health metrics such as soil moisture and temperature across their conservatory. However, the museum is seeking to enhance its monitoring system by tracking the health of plants over time and providing real-time alerts for gardeners when there is a problem. This project delivers a fully-functioning cloud-based Extract Transform Load (ETL) pipeline incorporating short- and long-term data storage solutions. In addition, the project includes a dynamic dashboard which allows staff constant access to a source of continually updating information. 
+
+### Dashboard Demo
+Here is what our dashboard looks like!
+
+<figure>
+ <img src="images/plants.gif" alt="LMNH Plants Dashboard Demo" width="900">
+</figure>
 
 ### Diagrams 📊
 
